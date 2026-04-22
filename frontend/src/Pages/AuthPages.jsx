@@ -279,29 +279,62 @@ function LoginPage({ onSwitch }) {
       navigate("/home");
     } else {
       alert(data.msg || "Login failed");
-      console.error("❌ Login failed:", data.msg);
+      console.error("Login failed:", data.msg);
+    }
+  };
+
+  //Login with google
+  useEffect(() => {
+    if (window.googleInitialized) return;
+    window.googleInitialized = true;
+
+    google.accounts.id.initialize({
+      client_id:
+        "786722486772-j3aobfouj1fmu23cjd9i122s4di870pp.apps.googleusercontent.com",
+      callback: handleLoginCredentialResponse,
+    });
+
+    google.accounts.id.renderButton(
+      document.getElementById("googleSignInDiv"),
+      { theme: "outline", size: "large", width: 400 },
+    );
+  }, []);
+  const handleLoginCredentialResponse = async (response) => {
+    console.log("Google token:", response.credential);
+    const res = await fetch("http://localhost:5000/api/auth/google", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token: response.credential }),
+    });
+
+    const data = await res.json();
+    console.log("Backend response:", data);
+
+    if (data.token) {
+      localStorage.setItem("token", data.token);
+      navigate("/home");
     }
   };
 
   return (
-   <div
-  style={{
-    position: "relative",
-    zIndex: 10,
-    width: "100%",
-    maxWidth: "420px",
-    margin: "0 auto",
-    animation: "slideUp 0.6s cubic-bezier(0.23,1,0.32,1) both",
+    <div
+      style={{
+        position: "relative",
+        zIndex: 10,
+        width: "100%",
+        maxWidth: "420px",
+        margin: "0 auto",
+        animation: "slideUp 0.6s cubic-bezier(0.23,1,0.32,1) both",
 
-    background: `
+        background: `
       linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)),
       url(${log})
     `,
-    backgroundSize: "contain",
-    backgroundRepeat: "no-repeat",
-    backgroundPosition: "center",
-  }}
->
+        backgroundSize: "contain",
+        backgroundRepeat: "no-repeat",
+        backgroundPosition: "center",
+      }}
+    >
       {/* FIX: Removed duplicate outer card wrapper — single card div only */}
       <div
         style={{
@@ -314,8 +347,6 @@ function LoginPage({ onSwitch }) {
             "0 0 60px rgba(0,100,200,0.15), 0 2px 0 rgba(0,207,255,0.08) inset",
           position: "relative",
           overflow: "hidden",
-
-
         }}
       >
         <div
@@ -376,34 +407,56 @@ function LoginPage({ onSwitch }) {
           />
         </div>
 
-        <button
-          onMouseEnter={() => setGHover(true)}
-          onMouseLeave={() => setGHover(false)}
-          style={{
-            width: "100%",
-            padding: "12px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "10px",
-            background: gHover
-              ? "rgba(255,255,255,0.1)"
-              : "rgba(255,255,255,0.05)",
-            border: "1px solid rgba(255,255,255,0.15)",
-            borderRadius: "6px",
-            cursor: "pointer",
-            color: "rgba(200,230,255,0.85)",
-            fontSize: "13px",
-            letterSpacing: "1.5px",
-            fontFamily: "'Courier New', monospace",
-            transition: "all .2s",
-            boxShadow: gHover ? "0 0 20px rgba(255,255,255,0.06)" : "none",
-            marginBottom: "20px",
-          }}
-        >
-          <GoogleIcon /> CONTINUE WITH GOOGLE
-        </button>
+        <div style={{ position: "relative", marginBottom: "20px" }}>
+          {/* CUSTOM BUTTON - VISIBLE, pointerEvents none */}
+          <button
+            onMouseEnter={() => setGHover(true)}
+            onMouseLeave={() => setGHover(false)}
+            style={{
+              width: "100%",
+              padding: "12px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "10px",
+              background: gHover
+                ? "rgba(255,255,255,0.1)"
+                : "rgba(255,255,255,0.05)",
+              border: "1px solid rgba(255,255,255,0.15)",
+              borderRadius: "6px",
+              cursor: "pointer",
+              color: "rgba(200,230,255,0.85)",
+              fontSize: "13px",
+              letterSpacing: "1.5px",
+              fontFamily: "'Courier New', monospace",
+              transition: "all .2s",
+              boxShadow: gHover ? "0 0 20px rgba(255,255,255,0.06)" : "none",
+              pointerEvents: "none", // click events go to the invisible overlay div
+              position: "relative",
+              zIndex: 1, // niche
+            }}
+          >
+            <GoogleIcon /> CONTINUE WITH GOOGLE
+          </button>
 
+          {/* GOOGLE DIV - INVISIBLE OVERLAY, upar */}
+          <div
+            id="googleSignInDiv" // ab div pe hai, button pe nahi
+            onMouseEnter={() => setGHover(true)}
+            onMouseLeave={() => setGHover(false)}
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              opacity: 0, // invisible
+              zIndex: 2, // custom button ke upar
+              overflow: "hidden",
+              cursor: "pointer",
+            }}
+          />
+        </div>
         <div
           style={{
             display: "flex",
@@ -583,13 +636,13 @@ function SignupPage({ onSwitch }) {
         margin: "0 auto",
         animation: "slideUp 0.6s cubic-bezier(0.23,1,0.32,1) both",
 
-         background: `
+        background: `
       linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)),
       url(${sign})
     `,
-    backgroundSize: "contain",
-    backgroundRepeat: "no-repeat",
-    backgroundPosition: "center",
+        backgroundSize: "contain",
+        backgroundRepeat: "no-repeat",
+        backgroundPosition: "center",
         // FIX: Removed `sign` variable reference (was undefined). Add your image URL here if needed:
         // backgroundImage: "url('/your-image-path.png')",
       }}
