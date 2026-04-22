@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
-
+import { OAuth2Client } from "google-auth-library";
 
 // REGISTER
 export const registerUser = async (req, res) => {
@@ -47,5 +47,57 @@ export const loginUser = async (req, res) => {
 
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+};
+
+
+const client = new OAuth2Client();
+
+export const googleLogin = async (req, res) => {
+  const { token } = req.body;
+
+  try {
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: "786722486772-j3aobfouj1fmu23cjd9i122s4di870pp.apps.googleusercontent.com", // yahan do
+    });
+
+    const payload = ticket.getPayload();
+    const { email, name, picture, sub: googleId } = payload;
+
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      user = await User.create({
+        name,
+        email,
+        picture,
+        googleId,
+        password: null,
+      });
+      console.log(" New user saved to DB:", email);
+    } else {
+      if (!user.googleId) {
+        user.googleId = googleId;
+        user.picture = picture;
+        await user.save();
+        console.log(" Existing user updated:", email);
+      }
+    }
+
+    const appToken = jwt.sign(
+      { id: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    res.json({
+      token: appToken,
+      user: { name, email, picture },
+    });
+
+  } catch (err) {
+    console.error("❌ Error:", err.message);
+    res.status(400).json({ msg: err.message });
   }
 };
