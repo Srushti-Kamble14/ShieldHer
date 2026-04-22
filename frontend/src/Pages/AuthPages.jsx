@@ -137,28 +137,9 @@ function AnimatedBackground({ mode }) {
       drawOrbit(ctx, W * 0.5, H * 0.5, Math.min(W, H) * 0.45, -t * 0.15, 0.04);
       drawOrbit(ctx, W * 0.5, H * 0.5, Math.min(W, H) * 0.28, t * 0.3, 0.05);
 
-      // Floating shield symbols
-      shields.forEach((s, i) => {
-        const floatY = Math.sin(t * s.speed + i) * 12;
-        drawShieldSymbol(
-          ctx,
-          s.x * W,
-          s.y * H + floatY,
-          s.size,
-          0.07 + Math.sin(t * s.speed + i * 1.3) * 0.04,
-          t
-        );
-      });
+      
 
-      // DNA strands on sides
-      if (mode === "signup") {
-        drawDNAStrand(ctx, W * 0.04, H * 0.5, t * 0.6, 0.5);
-        drawDNAStrand(ctx, W * 0.96, H * 0.5, t * 0.6 + Math.PI, 0.5);
-      } else {
-        drawDNAStrand(ctx, W * 0.04, H * 0.5, t * 0.6, 0.4);
-        drawDNAStrand(ctx, W * 0.96, H * 0.5, t * 0.6 + Math.PI, 0.4);
-      }
-
+      
       // Floating particles
       const pts = particlesRef.current;
       pts.forEach(p => {
@@ -180,18 +161,8 @@ function AnimatedBackground({ mode }) {
         ctx.restore();
       });
 
-      // Grid lines (very faint)
-      ctx.save();
-      ctx.globalAlpha = 0.025;
-      ctx.strokeStyle = "#00cfff";
-      ctx.lineWidth = 0.5;
-      for (let x = 0; x < W; x += 80) {
-        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
-      }
-      for (let y = 0; y < H; y += 80) {
-        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
-      }
-      ctx.restore();
+      
+    
 
       // Pulse rings emanating from center
       for (let i = 0; i < 3; i++) {
@@ -243,7 +214,7 @@ function Field({ label, type = "text", placeholder, value, onChange }) {
     <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
       <label style={{
         fontSize: "9px", letterSpacing: "3px",
-        color: focused ? "rgba(0,207,255,0.8)" : "rgba(0,207,255,0.45)",
+        color: focused ? "rgba(0,207,255,0.8)" : "rgba(0, 208, 255, 0.84)",
         textTransform: "uppercase", transition: "color .2s",
         fontFamily: "'Courier New', monospace",
       }}>{label}</label>
@@ -318,7 +289,7 @@ backgroundImage: "url('https://substackcdn.com/image/fetch/$s_!LP9-!,w_1272,c_li
         <div style={{ textAlign: "center", marginBottom: "32px" }}>
           <div style={{
             fontSize: "10px", letterSpacing: "5px",
-            color: "rgba(0,207,255,0.45)", marginBottom: "10px",
+            color: "rgba(0, 208, 255, 0.68)", marginBottom: "10px",
             fontFamily: "'Courier New', monospace",
           }}>◈ SECURE PORTAL</div>
           <h1 style={{
@@ -330,7 +301,7 @@ backgroundImage: "url('https://substackcdn.com/image/fetch/$s_!LP9-!,w_1272,c_li
           }}>SIGN IN</h1>
           <p style={{
             margin: "8px 0 0", fontSize: "12px",
-            color: "rgba(100,200,255,0.45)", letterSpacing: "1.5px",
+            color: "rgba(100, 201, 255, 0.67)", letterSpacing: "1.5px",
             fontFamily: "'Courier New', monospace",
           }}>SHIELDHER · POWERING RESILIENCE</p>
           <div style={{
@@ -364,7 +335,7 @@ backgroundImage: "url('https://substackcdn.com/image/fetch/$s_!LP9-!,w_1272,c_li
           display: "flex", alignItems: "center", gap: "12px", marginBottom: "20px",
         }}>
           <div style={{ flex: 1, height: "1px", background: "rgba(0,150,220,0.2)" }}/>
-          <span style={{ fontSize: "10px", letterSpacing: "2px", color: "rgba(0,150,220,0.4)", fontFamily: "'Courier New', monospace" }}>OR</span>
+          <span style={{ fontSize: "10px", letterSpacing: "2px", color: "rgba(0, 150, 220, 0.91)", fontFamily: "'Courier New', monospace" }}>OR</span>
           <div style={{ flex: 1, height: "1px", background: "rgba(0,150,220,0.2)" }}/>
         </div>
 
@@ -380,7 +351,7 @@ backgroundImage: "url('https://substackcdn.com/image/fetch/$s_!LP9-!,w_1272,c_li
         <div style={{ textAlign: "right", marginBottom: "24px" }}>
           <span style={{
             fontSize: "11px", letterSpacing: "1px",
-            color: "rgba(0,207,255,0.5)", cursor: "pointer",
+            color: "rgba(0, 208, 255, 0.77)", cursor: "pointer",
             fontFamily: "'Courier New', monospace",
             textDecoration: "underline",
           }}>FORGOT PASSWORD?</span>
@@ -466,7 +437,7 @@ function SignupPage({ onSwitch }) {
   
     }}>
       <div style={{
-        background: "rgba(4, 18, 48, 0.63)",
+        background: "rgba(4, 18, 48, 0.64)",
         border: "1px solid rgba(0,180,255,0.18)",
         borderRadius: "16px",
         padding: "36px 36px 32px",
