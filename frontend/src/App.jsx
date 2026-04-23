@@ -7,16 +7,18 @@ import PersonalDetailsPage from "./Pages/PersonalDetailsPage";
 function App() {
   return (
     <BrowserRouter>
-    <PersonalDetailsPage/>
+    
       <Routes>
      
-        {/* <Route path="/" element={<ShieldHerLoader />} />
+        <Route path="/" element={<ShieldHerLoader />} />
 
         
         <Route path="/login" element={<AuthPages />} />
 
         
-        <Route path="/home" element={<Home/>} /> */}
+        <Route path="/home" element={<Home/>} />
+
+        <Route path = "/details" element={<PersonalDetailsPage/>}/>
 
         
       </Routes>
