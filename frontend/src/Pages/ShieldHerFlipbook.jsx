@@ -5,7 +5,7 @@ export default function ShieldHerFlipbook() {
     
     <div
       style={{
-        backgroundColor: "#050E1E",
+        backgroundColor: "#040d1c",
         height: "100vh",
         display: "flex",
         justifyContent: "center",
@@ -25,7 +25,7 @@ export default function ShieldHerFlipbook() {
         }}
       >
         <iframe
-          src="https://heyzine.com/flip-book/7ebe2ce2e1.html"
+          src="https://heyzine.com/flip-book/3d12cf6d45.html"
           className="fp-iframe"
           title="Flipbook"
           style={{
@@ -44,12 +44,12 @@ export default function ShieldHerFlipbook() {
                <div
         style={{
           position: "absolute",   // ✅ sits on top of iframe
-          top: "18%",
+          bottom: "6%",
           left: "23%",
           transform: "translate(-50%, -50%)",
           width: "220px",
           height: "80px",
-          backgroundColor: "#050E1E",
+          backgroundColor: "#040d1c",
           borderRadius: "10px",
           
           zIndex: 1,
@@ -69,7 +69,7 @@ export default function ShieldHerFlipbook() {
                textAlign: "center",
           }}
         >
-          SHIELDHER
+          SHIELDHER ◇
         </h1>
       </div>
       <div
