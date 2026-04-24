@@ -28,7 +28,6 @@ export default function Gpstracker() {
   };
 
   return (
-   
     <div
       style={{
         height: "100vh",
@@ -36,48 +35,63 @@ export default function Gpstracker() {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        flexDirection: "column"
       }}
     >
-    <h1
-    style={{
-        fontSize : "40px",
-        padding : "20px"
-    }}
+      {/* 🔲 DYNAMIC BOX */}
+      <div
+        style={{
+          width: location ? "80%" : "400px",   // ✅ expands after click
+          height: location ? "80vh" : "250px", // ✅ expands after click
+          transition: "all 0.4s ease",         // 🔥 smooth animation
+          border: "1px solid #00cfff",
+          borderRadius: "10px",
+          overflow: "hidden",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        {/* 🔘 BUTTON VIEW */}
+        {!location && (
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: "20px",
+            }}
+          >
+            <h1 style={{ color: "#fff", fontSize: "22px" }}>
+              GPS LOCATION
+            </h1>
 
-    >GPS LOCATION</h1>
-      {/* 🔥 Show button ONLY when no location */}
-      {!location && (
-        <button
-          onClick={startTracking}
-          style={{
-            padding: "14px 30px",
-            fontSize: "14px",
-            background: "transparent",
-            border: "1px solid #00cfff",
-            color: "#00cfff",
-            borderRadius: "6px",
-            cursor: "pointer",
-            fontFamily: "'Orbitron', monospace",
-          }}
-        >
-          {loading ? "Getting Location..." : "Start Tracking"}
-        </button>
-      )}
+            <button
+              onClick={startTracking}
+              style={{
+                padding: "12px 24px",
+                background: "transparent",
+                border: "1px solid #00cfff",
+                color: "#00cfff",
+                borderRadius: "6px",
+                cursor: "pointer",
+              }}
+            >
+              {loading ? "Getting Location..." : "Start Tracking"}
+            </button>
+          </div>
+        )}
 
-      {/* 🔥 Show map ONLY after location */}
-      {location && (
-        <iframe
-          title="map"
-          width="80%"
-          height="80%"
-          style={{
-            border: "none",
-            borderRadius: "10px",
-          }}
-          src={`https://maps.google.com/maps?q=${location.lat},${location.lng}&z=15&output=embed`}
-        />
-      )}
+        {/* 🗺️ MAP VIEW */}
+        {location && (
+          <iframe
+            title="map"
+            width="100%"
+            height="100%"
+            style={{ border: "none" }}
+            src={`https://maps.google.com/maps?q=${location.lat},${location.lng}&z=15&output=embed`}
+          />
+        )}
+      </div>
     </div>
   );
 }

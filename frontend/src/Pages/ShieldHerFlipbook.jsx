@@ -11,6 +11,7 @@ export default function ShieldHerFlipbook() {
         position: "relative",
       }}
     >
+      {/* Heading */}
       <h2
         style={{
           fontFamily: "'Orbitron',monospace",
@@ -22,19 +23,21 @@ export default function ShieldHerFlipbook() {
           marginBottom: "40px",
         }}
       >
-        HOW TO ACTIVATE SHIELDHER
+       INSTRUCTION MANUAL
       </h2>
+
+      {/* Flipbook Container */}
       <div
         style={{
           width: "70%",
           height: "80vh",
           overflow: "hidden",
+          position: "relative", // ✅ important for overlays
           zIndex: 1,
         }}
       >
         <iframe
           src="https://heyzine.com/flip-book/3d12cf6d45.html"
-          className="fp-iframe"
           title="Flipbook"
           style={{
             border: "none",
@@ -46,67 +49,18 @@ export default function ShieldHerFlipbook() {
           scrolling="no"
         />
 
-        {/* White Rectangle Overlay */}
-
-               <div
-        style={{
-          position: "absolute",   // ✅ sits on top of iframe
-          bottom: "6%",
-          left: "23%",
-          transform: "translate(-50%, -50%)",
-          width: "220px",
-          height: "80px",
-          backgroundColor: "#040d1c",
-          borderRadius: "10px",
-          
-          zIndex: 1,
+        {/* 🔥 SHIELDHER BOX */}
         <div
           style={{
-            position: "absolute", // ✅ sits on top of iframe
-            top: "18%",
-            left: "23%",
+            position: "absolute",
+            bottom: "-5%",
+            left: "14%",
             transform: "translate(-50%, -50%)",
             width: "220px",
             height: "80px",
             backgroundColor: "#050E1E",
             borderRadius: "10px",
-
-            zIndex: 1,
-
-           display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <h1
-          style={{
-            margin: 0,
-            fontSize: "28px",
-            fontWeight: "bold",
-            color: "#fff",
-            letterSpacing: "2px",
-               textAlign: "center",
-          }}
-        >
-          SHIELDHER ◇
-        </h1>
-      </div>
-      <div
-        style={{
-          position: "absolute",   // ✅ sits on top of iframe
-          top: "17%",
-          right: "13%",
-          transform: "translate(-50%, -50%)",
-          width: "100px",
-          height: "100px",
-          backgroundColor: "#050E1E",
-          borderRadius: "10px",
-        
-          zIndex: 10,
-        }}
-      >
-      </div>
-
+            zIndex: 5,
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
@@ -119,26 +73,28 @@ export default function ShieldHerFlipbook() {
               fontWeight: "bold",
               color: "#fff",
               letterSpacing: "2px",
-              textAlign: "center",
             }}
           >
-            SHIELDHER
+            SHIELDHER ◇
           </h1>
         </div>
+
+        {/* 🔲 RIGHT BOX */}
         <div
           style={{
-            position: "absolute", // ✅ sits on top of iframe
-            top: "17%",
-            right: "13%",
-            transform: "translate(-50%, -50%)",
+            position: "absolute",
+            top: "8%",
+            right: "6%",
+            transform: "translate(50%, -50%)",
             width: "100px",
             height: "100px",
             backgroundColor: "#050E1E",
             borderRadius: "10px",
-
-            zIndex: 10,
+            zIndex: 5,
           }}
-        ></div>
+        />
+
+      
       </div>
     </div>
   );
