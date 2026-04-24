@@ -1,1108 +1,1669 @@
 import { useState, useEffect, useRef } from "react";
+import ShieldHerFlipbook from "./ShieldHerFlipbook";
+import PersonalDetailsPage from "./PersonalDetailsPage";
+import { useNavigate } from "react-router-dom";
 
-/* ── Global styles injected once ────────────────────────────── */
-const GLOBAL_CSS = `
-  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap');
-  *{margin:0;padding:0;box-sizing:border-box;}
-  body{background:#0a0010;color:#f0c0d8;font-family:'Rajdhani',sans-serif;overflow-x:hidden;}
-  ::-webkit-scrollbar{width:4px;}
-  ::-webkit-scrollbar-track{background:#0a0010;}
-  ::-webkit-scrollbar-thumb{background:#ff2d6b;border-radius:2px;}
-
-  @keyframes float{0%,100%{transform:translateY(0px);}50%{transform:translateY(-14px);}}
-  @keyframes pulse-pink{0%,100%{box-shadow:0 0 0 0 rgba(255,45,107,0.5);}50%{box-shadow:0 0 0 18px rgba(255,45,107,0);}}
-  @keyframes spin-slow{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
-  @keyframes scan{0%{top:-4px;}100%{top:100%;}}
-  @keyframes fadeSlideUp{from{opacity:0;transform:translateY(40px);}to{opacity:1;transform:translateY(0);}}
-  @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
-  @keyframes shimmer{0%{background-position:-400px 0;}100%{background-position:400px 0;}}
-  @keyframes blink{0%,100%{opacity:1;}50%{opacity:0.3;}}
-  @keyframes dangerPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,0,80,0.8),0 0 30px rgba(255,0,80,0.4);}50%{box-shadow:0 0 0 24px rgba(255,0,80,0),0 0 60px rgba(255,0,80,0.2);}}
-  @keyframes ripple{0%{transform:scale(0.8);opacity:1;}100%{transform:scale(2.5);opacity:0;}}
-  @keyframes slideRight{from{transform:translateX(-60px);opacity:0;}to{transform:translateX(0);opacity:1;}}
-  @keyframes glowPink{0%,100%{text-shadow:0 0 20px rgba(255,45,107,0.5);}50%{text-shadow:0 0 40px rgba(255,45,107,0.9),0 0 80px rgba(255,100,150,0.4);}}
-  @keyframes navGlow{0%,100%{box-shadow:0 2px 30px rgba(255,45,107,0.1);}50%{box-shadow:0 2px 30px rgba(255,45,107,0.25);}}
-  @keyframes particleFloat{0%{transform:translateY(0) translateX(0);opacity:0.8;}100%{transform:translateY(-120px) translateX(var(--dx));opacity:0;}}
-  @keyframes waveform{0%,100%{height:6px;}50%{height:28px;}}
-  @keyframes alertFlash{0%,100%{background:rgba(255,0,80,0.15);}50%{background:rgba(255,0,80,0.35);}}
+const CSS = `
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@400;500;600;700&display=swap');
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{background:#060d1a;color:#a8f0ff;font-family:'Rajdhani',sans-serif;overflow-x:hidden;}
+  ::-webkit-scrollbar{width:3px;}
+  ::-webkit-scrollbar-track{background:#060d1a;}
+  ::-webkit-scrollbar-thumb{background:#00cfff;border-radius:2px;}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(32px);}to{opacity:1;transform:translateY(0);}}
+  @keyframes blink{0%,100%{opacity:1;}50%{opacity:0.2;}}
+  @keyframes glow{0%,100%{text-shadow:0 0 20px rgba(0,207,255,0.4);}50%{text-shadow:0 0 50px rgba(0,207,255,0.8),0 0 90px rgba(0,150,255,0.3);}}
+  @keyframes pulseRing{0%,100%{box-shadow:0 0 0 0 rgba(0,207,255,0.5);}50%{box-shadow:0 0 0 16px rgba(0,207,255,0);}}
+  @keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+  @keyframes spinR{from{transform:rotate(0deg);}to{transform:rotate(-360deg);}}
+  @keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+  @keyframes scanLine{0%{top:0%;opacity:.7;}100%{top:100%;opacity:0;}}
+  @keyframes borderPulse{0%,100%{border-color:rgba(0,180,255,0.18);}50%{border-color:rgba(0,207,255,0.45);}}
+  @keyframes caretBlink{0%,100%{border-right-color:#00cfff;}50%{border-right-color:transparent;}}
+  @keyframes shimmer{0%{opacity:.4;}50%{opacity:1;}100%{opacity:.4;}}
+  @keyframes iconPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.1);}}
+  @keyframes orbitDot{from{transform:rotate(0deg) translateX(80px) rotate(0deg);}to{transform:rotate(360deg) translateX(80px) rotate(-360deg);}}
+  @keyframes navReveal{from{transform:translateY(-100%);}to{transform:translateY(0);}}
+  @keyframes rippleOut{0%{transform:scale(1);opacity:.6;}100%{transform:scale(2.5);opacity:0;}}
+  @keyframes slideInLeft{from{opacity:0;transform:translateX(-40px);}to{opacity:1;transform:translateX(0);}}
+  @keyframes slideInRight{from{opacity:0;transform:translateX(40px);}to{opacity:1;transform:translateX(0);}}
 `;
 
-/* ── Animated BG Canvas ─────────────────────────────────────── */
-function PinkParticlesBG() {
-  const ref = useRef(null);
-  const rafRef = useRef(null);
-  const tRef = useRef(0);
-  const lastRef = useRef(null);
-  const pts = useRef([]);
+/* ── BG Canvas ───────────────────────────────────────────────── */
 
-  useEffect(() => {
-    const c = ref.current;
-    const ctx = c.getContext("2d");
-    const resize = () => {
-      c.width = window.innerWidth;
-      c.height = window.innerHeight;
-      pts.current = Array.from({ length: 80 }, () => ({
-        x: Math.random() * c.width,
-        y: Math.random() * c.height,
-        r: 0.5 + Math.random() * 2,
-        vx: (Math.random() - 0.5) * 0.3,
-        vy: -0.1 - Math.random() * 0.3,
-        alpha: 0.1 + Math.random() * 0.5,
-        pulse: Math.random() * Math.PI * 2,
-        hue: 320 + Math.random() * 40,
-      }));
-    };
-    resize();
-    window.addEventListener("resize", resize);
-
-    const render = (now) => {
-      const W = c.width, H = c.height;
-      const dt = Math.min(now - (lastRef.current || now), 50) / 1000;
-      lastRef.current = now;
-      tRef.current += dt;
-      const t = tRef.current;
-
-      ctx.clearRect(0, 0, W, H);
-
-      // Deep dark bg
-      const bg = ctx.createRadialGradient(W * 0.5, H * 0.3, 0, W * 0.5, H * 0.5, Math.max(W, H) * 0.8);
-      bg.addColorStop(0, "#120018");
-      bg.addColorStop(0.4, "#0a0010");
-      bg.addColorStop(1, "#050008");
-      ctx.fillStyle = bg;
-      ctx.fillRect(0, 0, W, H);
-
-      // Pink ambient glow blobs
-      [[0.2, 0.2, 0.25], [0.8, 0.7, 0.2], [0.5, 0.9, 0.15]].forEach(([rx, ry, s]) => {
-        const grd = ctx.createRadialGradient(W * rx, H * ry, 0, W * rx, H * ry, Math.min(W, H) * s);
-        grd.addColorStop(0, `rgba(180,0,80,${0.07 + Math.sin(t * 0.5 + rx * 10) * 0.02})`);
-        grd.addColorStop(1, "rgba(0,0,0,0)");
-        ctx.fillStyle = grd;
-        ctx.fillRect(0, 0, W, H);
-      });
-
-      // Grid
-      ctx.save();
-      ctx.globalAlpha = 0.03;
-      ctx.strokeStyle = "#ff2d6b";
-      ctx.lineWidth = 0.5;
-      for (let x = 0; x < W; x += 80) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
-      for (let y = 0; y < H; y += 80) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
-      ctx.restore();
-
-      // Particles
-      pts.current.forEach(p => {
-        p.x += p.vx; p.y += p.vy; p.pulse += dt * 1.5;
-        if (p.y < -10) { p.y = H + 10; p.x = Math.random() * W; }
-        const a = p.alpha * (0.4 + Math.sin(p.pulse) * 0.4);
-        ctx.save();
-        ctx.globalAlpha = a;
-        ctx.fillStyle = `hsl(${p.hue},100%,65%)`;
-        ctx.shadowColor = `hsl(${p.hue},100%,65%)`;
-        ctx.shadowBlur = 8;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.restore();
-      });
-
-      // Pulse rings
-      for (let i = 0; i < 3; i++) {
-        const ph = ((t * 0.25 + i / 3) % 1);
-        ctx.save();
-        ctx.globalAlpha = (1 - ph) * 0.04;
-        ctx.strokeStyle = "#ff2d6b";
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.arc(W * 0.5, H * 0.5, ph * Math.min(W, H) * 0.6, 0, Math.PI * 2);
-        ctx.stroke();
-        ctx.restore();
-      }
-
-      rafRef.current = requestAnimationFrame(render);
-    };
-    rafRef.current = requestAnimationFrame(render);
-    return () => { cancelAnimationFrame(rafRef.current); window.removeEventListener("resize", resize); };
-  }, []);
-
-  return <canvas ref={ref} style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none" }} />;
-}
-
-/* ── Navbar ─────────────────────────────────────────────────── */
-function Navbar({ onNav }) {
+/* ── Navbar ──────────────────────────────────────────────────── */
+function Navbar() {
   const [scrolled, setScrolled] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
   useEffect(() => {
-    const fn = () => setScrolled(window.scrollY > 30);
+    const fn = () => setScrolled(window.scrollY > 40);
     window.addEventListener("scroll", fn);
     return () => window.removeEventListener("scroll", fn);
   }, []);
-
-  const links = ["Home", "How It Works", "Features", "About", "Contact"];
-
+  const links = ["Home", "About", "How It Works", "Safety", "Contact"];
   return (
-    <nav style={{
-      position: "fixed", top: 0, left: 0, right: 0, zIndex: 1000,
-      padding: "0 40px",
-      height: "68px",
-      display: "flex", alignItems: "center", justifyContent: "space-between",
-      background: scrolled ? "rgba(10,0,16,0.92)" : "rgba(10,0,16,0.6)",
-      backdropFilter: "blur(20px)",
-      borderBottom: "1px solid rgba(255,45,107,0.2)",
-      animation: "navGlow 4s ease-in-out infinite",
-      transition: "background 0.3s",
-    }}>
-      {/* Logo */}
-      <div style={{ display: "flex", alignItems: "center", gap: "10px", cursor: "pointer" }}>
-        <div style={{
-          width: "36px", height: "36px",
-          border: "2px solid #ff2d6b",
-          borderRadius: "8px",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          boxShadow: "0 0 16px rgba(255,45,107,0.4)",
-          background: "rgba(255,45,107,0.1)",
-        }}>
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <path d="M10 2 L17 5 L17 10 C17 14.5 13.5 17.5 10 19 C6.5 17.5 3 14.5 3 10 L3 5 Z" fill="rgba(255,45,107,0.3)" stroke="#ff2d6b" strokeWidth="1.5"/>
-            <line x1="10" y1="4" x2="10" y2="16" stroke="#ff9dbb" strokeWidth="1"/>
-            <circle cx="10" cy="9" r="2" fill="#ff2d6b"/>
+    <nav
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 1000,
+        height: "64px",
+        padding: "0 48px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        background: scrolled ? "rgba(6,13,26,0.97)" : "rgba(6,13,26,0.72)",
+        backdropFilter: "blur(24px)",
+        borderBottom: "1px solid rgba(0,180,255,0.14)",
+        transition: "background .3s",
+        animation: "navReveal .5s ease both",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "10px",
+          cursor: "pointer",
+        }}
+      >
+        <div
+          style={{
+            width: "34px",
+            height: "34px",
+            border: "1.5px solid rgba(0,207,255,0.65)",
+            borderRadius: "8px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            background: "rgba(0,207,255,0.08)",
+            boxShadow: "0 0 14px rgba(0,207,255,0.22)",
+          }}
+        >
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+            <path
+              d="M10 2L17 5L17 10C17 14.5 13.5 17.5 10 19C6.5 17.5 3 14.5 3 10L3 5Z"
+              fill="rgba(0,207,255,0.18)"
+              stroke="#00cfff"
+              strokeWidth="1.5"
+            />
+            <circle cx="10" cy="9.5" r="2.2" fill="#00cfff" />
           </svg>
         </div>
-        <span style={{
-          fontFamily: "'Orbitron', monospace", fontSize: "18px",
-          fontWeight: 700, color: "#ff2d6b",
-          textShadow: "0 0 20px rgba(255,45,107,0.5)",
-          letterSpacing: "2px",
-        }}>SHIELDHER</span>
-      </div>
-
-      {/* Desktop links */}
-      <div style={{ display: "flex", gap: "32px", alignItems: "center" }}>
-        {links.map(l => (
-          <a key={l} href="#" onClick={e => { e.preventDefault(); onNav(l); }} style={{
-            color: "rgba(240,192,216,0.7)", fontSize: "13px",
-            letterSpacing: "1.5px", textDecoration: "none",
-            fontFamily: "'Rajdhani', sans-serif", fontWeight: 600,
-            textTransform: "uppercase",
-            transition: "color .2s, text-shadow .2s",
+        <span
+          style={{
+            fontFamily: "'Orbitron',monospace",
+            fontSize: "16px",
+            fontWeight: 700,
+            color: "#00cfff",
+            letterSpacing: "3px",
+            textShadow: "0 0 14px rgba(0,207,255,0.38)",
           }}
-          onMouseEnter={e => { e.target.style.color = "#ff2d6b"; e.target.style.textShadow = "0 0 12px rgba(255,45,107,0.6)"; }}
-          onMouseLeave={e => { e.target.style.color = "rgba(240,192,216,0.7)"; e.target.style.textShadow = "none"; }}>
+        >
+          SHIELDHER
+        </span>
+      </div>
+      <div style={{ display: "flex", gap: "34px", alignItems: "center" }}>
+        {links.map((l) => (
+          <a
+            key={l}
+            href={`#${l.toLowerCase().replace(/ /g, "-")}`}
+            style={{
+              color: "rgba(168,240,255,0.58)",
+              fontSize: "12px",
+              letterSpacing: "1.5px",
+              textDecoration: "none",
+              fontFamily: "'Rajdhani',sans-serif",
+              fontWeight: 600,
+              textTransform: "uppercase",
+              transition: "color .2s",
+            }}
+            onMouseEnter={(e) => (e.target.style.color = "#00cfff")}
+            onMouseLeave={(e) =>
+              (e.target.style.color = "rgba(168,240,255,0.58)")
+            }
+          >
             {l}
           </a>
         ))}
-        <button style={{
-          padding: "8px 22px",
-          background: "linear-gradient(135deg,#ff2d6b,#c2006a)",
-          border: "none", borderRadius: "6px",
-          color: "#fff", fontSize: "13px", letterSpacing: "1.5px",
-          fontFamily: "'Rajdhani', sans-serif", fontWeight: 700,
-          textTransform: "uppercase", cursor: "pointer",
-          boxShadow: "0 0 20px rgba(255,45,107,0.4)",
-          transition: "box-shadow .2s, transform .2s",
-        }}
-        onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 0 35px rgba(255,45,107,0.7)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
-        onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 0 20px rgba(255,45,107,0.4)"; e.currentTarget.style.transform = "translateY(0)"; }}>
-          Get Protected
+        <button
+          style={{
+            padding: "9px 24px",
+            background:
+              "linear-gradient(90deg,rgba(0,100,200,0.48),rgba(0,207,255,0.36))",
+            border: "1px solid rgba(0,207,255,0.52)",
+            borderRadius: "6px",
+            color: "#7de8ff",
+            fontSize: "11px",
+            letterSpacing: "2px",
+            fontFamily: "'Orbitron',monospace",
+            fontWeight: 700,
+            cursor: "pointer",
+            boxShadow: "0 0 18px rgba(0,207,255,0.14)",
+            transition: "all .25s",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.boxShadow = "0 0 30px rgba(0,207,255,0.32)";
+            e.currentTarget.style.transform = "translateY(-2px)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.boxShadow = "0 0 18px rgba(0,207,255,0.14)";
+            e.currentTarget.style.transform = "translateY(0)";
+          }}
+        >
+          GET PROTECTED
         </button>
       </div>
     </nav>
   );
 }
 
-/* ── Hero Section ───────────────────────────────────────────── */
-function Hero() {
-  const [shown, setShown] = useState(false);
-  useEffect(() => { setTimeout(() => setShown(true), 200); }, []);
-
+/* ── Hero ────────────────────────────────────────────────────── */
+function Hero({ navigate }) {
+  const [vis, setVis] = useState(false);
+  const [typed, setTyped] = useState("");
+  const full = "Protecting Every Woman, Everywhere.";
+  useEffect(() => {
+    setTimeout(() => setVis(true), 300);
+    let i = 0;
+    const iv = setInterval(() => {
+      if (i <= full.length) {
+        setTyped(full.slice(0, i));
+        i++;
+      } else clearInterval(iv);
+    }, 55);
+    return () => clearInterval(iv);
+  }, []);
   return (
-    <section style={{
-      minHeight: "100vh", display: "flex", alignItems: "center",
-      justifyContent: "center", textAlign: "center",
-      padding: "120px 24px 60px", position: "relative",
-    }}>
-      {/* Big glow behind text */}
-      <div style={{
-        position: "absolute", top: "50%", left: "50%",
-        transform: "translate(-50%,-50%)",
-        width: "600px", height: "600px", borderRadius: "50%",
-        background: "radial-gradient(circle,rgba(255,45,107,0.08) 0%,transparent 70%)",
-        pointerEvents: "none",
-      }}/>
-
-      <div style={{
-        position: "relative", zIndex: 1,
-        opacity: shown ? 1 : 0,
-        transform: shown ? "translateY(0)" : "translateY(30px)",
-        transition: "all 0.9s cubic-bezier(0.23,1,0.32,1)",
-      }}>
-        <div style={{
-          fontSize: "11px", letterSpacing: "6px",
-          color: "#ff2d6b", marginBottom: "20px",
-          fontFamily: "'Orbitron', monospace",
-          animation: "blink 3s ease-in-out infinite",
-        }}>◈ WOMEN SAFETY REIMAGINED</div>
-
-        <h1 style={{
-          fontFamily: "'Orbitron', monospace",
-          fontSize: "clamp(2.5rem,6vw,5.5rem)",
-          fontWeight: 900, lineHeight: 1.1,
-          marginBottom: "24px",
-          background: "linear-gradient(135deg,#ffffff 0%,#ffb3cc 40%,#ff2d6b 70%,#c2006a 100%)",
-          WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
-          animation: "glowPink 4s ease-in-out infinite",
-          letterSpacing: "2px",
-        }}>
-          SHIELD<br/>HER
-        </h1>
-
-        <p style={{
-          fontSize: "clamp(1rem,2vw,1.3rem)",
-          color: "rgba(240,192,216,0.75)",
-          maxWidth: "560px", margin: "0 auto 16px",
-          lineHeight: 1.7, letterSpacing: "0.5px",
-          fontWeight: 400,
-        }}>
-          AI-powered women safety platform with real-time threat detection,
-          emergency response, and wearable protection — because every woman
-          deserves to feel safe, everywhere.
-        </p>
-
-        <p style={{
-          fontSize: "13px", letterSpacing: "3px",
-          color: "#ff2d6b", marginBottom: "40px",
-          fontFamily: "'Orbitron', monospace", fontWeight: 400,
-        }}>POWERING RESILIENCE</p>
-
-        <div style={{ display: "flex", gap: "16px", justifyContent: "center", flexWrap: "wrap" }}>
-          <button style={{
-            padding: "16px 40px",
-            background: "linear-gradient(135deg,#ff2d6b,#c2006a)",
-            border: "none", borderRadius: "8px",
-            color: "#fff", fontSize: "14px", letterSpacing: "2px",
-            fontFamily: "'Orbitron', monospace", fontWeight: 600,
-            cursor: "pointer",
-            boxShadow: "0 0 40px rgba(255,45,107,0.4)",
-            animation: "pulse-pink 2.5s ease-in-out infinite",
-            transition: "transform .2s",
+    <section
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        textAlign: "center",
+        padding: "120px 24px 80px",
+        position: "relative",
+        /* 🔥 BACKGROUND ONLY HERE */
+        background: `linear-gradient(rgba(6, 13, 26, 0.72), rgba(4, 12, 29, 1)), url("https://static.vecteezy.com/system/resources/thumbnails/030/337/740/original/loop-animation-of-glossy-shield-with-dark-background-3d-rendering-free-video.jpg") `,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+      }}
+    >
+      <div
+        style={{
+          position: "absolute",
+          left: 0,
+          right: 0,
+          height: "1px",
+          background:
+            "linear-gradient(90deg,transparent,rgba(0,207,255,0.28),transparent)",
+          animation: "scanLine 6s linear infinite",
+          pointerEvents: "none",
+        }}
+      />
+      <div
+        style={{
+          position: "relative",
+          zIndex: 1,
+          opacity: vis ? 1 : 0,
+          transform: vis ? "translateY(0)" : "translateY(28px)",
+          transition: "all 1s cubic-bezier(0.23,1,0.32,1)",
+        }}
+      >
+        <div
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "8px",
+            padding: "6px 18px",
+            background: "rgba(0,207,255,0.06)",
+            border: "1px solid rgba(0,180,255,0.2)",
+            borderRadius: "20px",
+            marginBottom: "28px",
           }}
-          onMouseEnter={e => e.currentTarget.style.transform = "scale(1.05)"}
-          onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}>
+        >
+          <div
+            style={{
+              width: "5px",
+              height: "5px",
+              borderRadius: "50%",
+              background: "#00cfff",
+              boxShadow: "0 0 7px #00cfff",
+              animation: "blink 1.5s ease-in-out infinite",
+            }}
+          />
+          <span
+            style={{
+              fontFamily: "'Orbitron',monospace",
+              fontSize: "9px",
+              letterSpacing: "3px",
+              color: "rgba(0,207,255,0.7)",
+            }}
+          >
+            AI-POWERED WOMEN SAFETY
+          </span>
+        </div>
+        <h1
+          style={{
+            fontFamily: "'Orbitron',monospace",
+            fontSize: "clamp(3rem,7vw,6rem)",
+            fontWeight: 900,
+            letterSpacing: "4px",
+            lineHeight: 1.05,
+            marginBottom: "24px",
+            background:
+              "linear-gradient(135deg,#ffffff 0%,#a8f0ff 40%,#00cfff 70%,#0080cc 100%)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            animation: "glow 5s ease-in-out infinite",
+          }}
+        >
+          SHIELD
+          <br />
+          HER
+        </h1>
+        <div
+          style={{
+            fontFamily: "'Courier New',monospace",
+            fontSize: "clamp(0.95rem,2vw,1.25rem)",
+            color: "rgba(168,240,255,0.78)",
+            letterSpacing: "1px",
+            marginBottom: "14px",
+            minHeight: "2rem",
+            display: "inline-block",
+            borderRight: "2px solid #00cfff",
+            paddingRight: "4px",
+            animation: "caretBlink 0.8s step-end infinite",
+            overflow: "hidden",
+            whiteSpace: "nowrap",
+          }}
+        >
+          {typed}
+        </div>
+        <p
+          style={{
+            fontSize: "14px",
+            color: "rgba(0,180,255,0.48)",
+            letterSpacing: "3px",
+            marginBottom: "48px",
+            fontFamily: "'Orbitron',monospace",
+            fontWeight: 400,
+          }}
+        >
+          POWERING RESILIENCE
+        </p>
+        <div
+          style={{
+            display: "flex",
+            gap: "16px",
+            justifyContent: "center",
+            flexWrap: "wrap",
+          }}
+        >
+          <button
+            style={{
+              padding: "15px 44px",
+              background:
+                "linear-gradient(90deg,rgba(0,100,200,0.52),rgba(0,207,255,0.4))",
+              border: "1px solid rgba(0,207,255,0.58)",
+              borderRadius: "8px",
+              color: "#7de8ff",
+              fontSize: "12px",
+              letterSpacing: "2.5px",
+              fontFamily: "'Orbitron',monospace",
+              fontWeight: 700,
+              cursor: "pointer",
+              boxShadow: "0 0 36px rgba(0,207,255,0.18)",
+              animation: "pulseRing 2.5s ease-in-out infinite",
+              transition: "transform .2s",
+            }}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.transform = "scale(1.04)")
+            }
+            onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+              onClick={() => navigate("/details")}
+          >
             ACTIVATE SHIELD
           </button>
-          <button style={{
-            padding: "16px 40px",
-            background: "transparent",
-            border: "1px solid rgba(255,45,107,0.5)",
-            borderRadius: "8px",
-            color: "#ff9dbb", fontSize: "14px", letterSpacing: "2px",
-            fontFamily: "'Orbitron', monospace", fontWeight: 600,
-            cursor: "pointer",
-            transition: "all .2s",
-          }}
-          onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,45,107,0.1)"; e.currentTarget.style.borderColor = "#ff2d6b"; }}
-          onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "rgba(255,45,107,0.5)"; }}>
-            WATCH DEMO
+          <button
+            style={{
+              padding: "15px 44px",
+              background: "transparent",
+              border: "1px solid rgba(0,180,255,0.28)",
+              borderRadius: "8px",
+              color: "rgba(168,240,255,0.58)",
+              fontSize: "12px",
+              letterSpacing: "2.5px",
+              fontFamily: "'Orbitron',monospace",
+              fontWeight: 700,
+              cursor: "pointer",
+              transition: "all .25s",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = "rgba(0,207,255,0.55)";
+              e.currentTarget.style.color = "#a8f0ff";
+              e.currentTarget.style.background = "rgba(0,207,255,0.05)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = "rgba(0,180,255,0.28)";
+              e.currentTarget.style.color = "rgba(168,240,255,0.58)";
+              e.currentTarget.style.background = "transparent";
+            }}
+          >
+            LEARN MORE
           </button>
         </div>
-
-        {/* Stats */}
-        <div style={{
-          display: "flex", gap: "40px", justifyContent: "center",
-          marginTop: "60px", flexWrap: "wrap",
-        }}>
-          {[["10K+","Women Protected"],["< 3s","Emergency Response"],["99.9%","Uptime"],["24/7","AI Monitoring"]].map(([n, l]) => (
+        <div
+          style={{
+            display: "flex",
+            gap: "48px",
+            justifyContent: "center",
+            marginTop: "64px",
+            flexWrap: "wrap",
+          }}
+        >
+          {[
+            ["10K+", "Women Protected"],
+            ["< 3s", "SOS Response"],
+            ["99.9%", "Uptime"],
+            ["24/7", "AI Monitoring"],
+          ].map(([n, l]) => (
             <div key={l} style={{ textAlign: "center" }}>
-              <div style={{
-                fontFamily: "'Orbitron', monospace", fontSize: "1.8rem",
-                fontWeight: 700, color: "#ff2d6b",
-                textShadow: "0 0 20px rgba(255,45,107,0.5)",
-              }}>{n}</div>
-              <div style={{ fontSize: "11px", letterSpacing: "2px", color: "rgba(240,192,216,0.5)", marginTop: "4px" }}>{l}</div>
+              <div
+                style={{
+                  fontFamily: "'Orbitron',monospace",
+                  fontSize: "1.65rem",
+                  fontWeight: 700,
+                  color: "#00cfff",
+                  textShadow: "0 0 18px rgba(0,207,255,0.45)",
+                }}
+              >
+                {n}
+              </div>
+              <div
+                style={{
+                  fontSize: "10px",
+                  letterSpacing: "2px",
+                  color: "rgba(0,180,255,0.42)",
+                  marginTop: "4px",
+                  fontFamily: "'Courier New',monospace",
+                }}
+              >
+                {l}
+              </div>
             </div>
           ))}
         </div>
       </div>
-    </section>
-  );
-}
-
-/* ── Cinematic Demo ─────────────────────────────────────────── */
-function CinematicDemo() {
-  const [step, setStep] = useState(0);
-  const [playing, setPlaying] = useState(false);
-  const [danger, setDanger] = useState(false);
-  const timerRef = useRef(null);
-
-  const STEPS = [
-    { id: 0, label: "SCENE: Dark Street", sub: "Girl walking alone at night" },
-    { id: 1, label: "THREAT DETECTED", sub: "Two unidentified figures approaching" },
-    { id: 2, label: "METHOD 1: App Activation", sub: "Manually opens ShieldHer — location tracked, alerts sent" },
-    { id: 3, label: "METHOD 2: Voice Trigger", sub: 'Says "Danger" — AI activates, calls + SMS to emergency contacts' },
-    { id: 4, label: "METHOD 3: Wearable Tap", sub: "Brooch tapped — GPS+GSM+Camera activate, police notified" },
-    { id: 5, label: "HELP IS COMING", sub: "Emergency contacts + police racing to her location" },
-  ];
-
-  const play = () => {
-    setPlaying(true);
-    setStep(0);
-    setDanger(false);
-  };
-
-  useEffect(() => {
-    if (!playing) return;
-    if (step === 1) setDanger(true);
-    if (step >= STEPS.length - 1) { setPlaying(false); return; }
-    timerRef.current = setTimeout(() => setStep(s => s + 1), step === 0 ? 2500 : 3000);
-    return () => clearTimeout(timerRef.current);
-  }, [playing, step]);
-
-  return (
-    <section id="demo" style={{ padding: "80px 24px", position: "relative" }}>
-      <div style={{ maxWidth: "900px", margin: "0 auto" }}>
-        {/* Section header */}
-        <div style={{ textAlign: "center", marginBottom: "48px" }}>
-          <div style={{ fontSize: "10px", letterSpacing: "5px", color: "#ff2d6b", marginBottom: "12px", fontFamily: "'Orbitron', monospace" }}>
-            ◈ CINEMATIC DEMO
-          </div>
-          <h2 style={{ fontFamily: "'Orbitron', monospace", fontSize: "clamp(1.5rem,3vw,2.5rem)", color: "#fff", letterSpacing: "2px", fontWeight: 700 }}>
-            SEE IT IN ACTION
-          </h2>
-        </div>
-
-        {/* Scene frame */}
-        <div style={{
-          position: "relative",
-          background: "rgba(5,0,10,0.95)",
-          border: `2px solid ${danger ? "#ff0050" : "rgba(255,45,107,0.3)"}`,
-          borderRadius: "16px",
-          overflow: "hidden",
-          minHeight: "480px",
-          transition: "border-color 0.5s",
-          boxShadow: danger ? "0 0 60px rgba(255,0,80,0.3), inset 0 0 80px rgba(255,0,80,0.05)" : "0 0 40px rgba(255,45,107,0.1)",
-        }}>
-          {/* Danger pulse overlay */}
-          {danger && step >= 1 && (
-            <div style={{
-              position: "absolute", inset: 0,
-              background: "rgba(255,0,50,0.04)",
-              animation: "alertFlash 1s ease-in-out infinite",
-              zIndex: 1, pointerEvents: "none",
-            }}/>
-          )}
-
-          {/* Scan line */}
-          {playing && (
-            <div style={{
-              position: "absolute", left: 0, right: 0, height: "2px",
-              background: "linear-gradient(90deg,transparent,rgba(255,45,107,0.6),transparent)",
-              animation: "scan 2.5s linear infinite", zIndex: 5, pointerEvents: "none",
-            }}/>
-          )}
-
-          {/* Scene renderer */}
-          <SceneRenderer step={step} playing={playing} danger={danger} />
-
-          {/* HUD overlays */}
-          {playing && (
-            <>
-              {/* Top-left HUD */}
-              <div style={{
-                position: "absolute", top: "16px", left: "16px", zIndex: 10,
-                fontFamily: "'Orbitron', monospace", fontSize: "10px",
-                color: danger ? "#ff0050" : "#ff9dbb", letterSpacing: "2px",
-              }}>
-                <div style={{ animation: "blink 1s infinite" }}>● {danger ? "THREAT DETECTED" : "MONITORING ACTIVE"}</div>
-                <div style={{ color: "rgba(255,157,187,0.5)", marginTop: "4px" }}>GPS: LIVE</div>
-              </div>
-              {/* Top-right */}
-              <div style={{
-                position: "absolute", top: "16px", right: "16px", zIndex: 10,
-                fontFamily: "'Orbitron', monospace", fontSize: "10px",
-                color: "rgba(255,157,187,0.6)", textAlign: "right",
-              }}>
-                <div>SHIELDHER v2.4</div>
-                <div style={{ marginTop: "4px" }}>AI ENGINE: ACTIVE</div>
-              </div>
-            </>
-          )}
-
-          {/* Step label */}
-          {playing && (
-            <div style={{
-              position: "absolute", bottom: "60px", left: "50%",
-              transform: "translateX(-50%)",
-              zIndex: 10, textAlign: "center", width: "90%",
-            }}>
-              <div style={{
-                fontFamily: "'Orbitron', monospace",
-                fontSize: "clamp(0.8rem,2vw,1.1rem)",
-                fontWeight: 700,
-                color: danger ? "#ff3366" : "#ff9dbb",
-                textShadow: danger ? "0 0 20px rgba(255,0,80,0.8)" : "0 0 10px rgba(255,45,107,0.5)",
-                letterSpacing: "2px",
-                animation: "fadeSlideUp 0.4s ease both",
-              }}>
-                {STEPS[step]?.label}
-              </div>
-              <div style={{
-                fontSize: "13px", color: "rgba(240,192,216,0.65)",
-                marginTop: "6px", letterSpacing: "1px",
-              }}>
-                {STEPS[step]?.sub}
-              </div>
-            </div>
-          )}
-
-          {/* Play button */}
-          {!playing && (
-            <div style={{
-              position: "absolute", inset: 0, zIndex: 20,
-              display: "flex", flexDirection: "column",
-              alignItems: "center", justifyContent: "center",
-              background: "rgba(5,0,10,0.7)",
-              backdropFilter: "blur(4px)",
-            }}>
-              <button onClick={play} style={{
-                width: "80px", height: "80px", borderRadius: "50%",
-                background: "rgba(255,45,107,0.15)",
-                border: "2px solid #ff2d6b",
-                cursor: "pointer", color: "#ff2d6b", fontSize: "28px",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                boxShadow: "0 0 40px rgba(255,45,107,0.4)",
-                animation: "pulse-pink 2s ease-in-out infinite",
-                transition: "transform .2s",
-              }}
-              onMouseEnter={e => e.currentTarget.style.transform = "scale(1.1)"}
-              onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}>
-                ▶
-              </button>
-              <p style={{
-                marginTop: "20px", fontFamily: "'Orbitron', monospace",
-                fontSize: "12px", letterSpacing: "3px", color: "rgba(255,157,187,0.7)",
-              }}>{step > 0 ? "REPLAY DEMO" : "PLAY DEMO"}</p>
-            </div>
-          )}
-
-          {/* Step indicator */}
-          <div style={{
-            position: "absolute", bottom: "16px", left: "50%",
-            transform: "translateX(-50%)",
-            display: "flex", gap: "8px", zIndex: 10,
-          }}>
-            {STEPS.map((s, i) => (
-              <div key={i} style={{
-                width: i === step ? "24px" : "6px",
-                height: "4px", borderRadius: "2px",
-                background: i <= step ? "#ff2d6b" : "rgba(255,45,107,0.25)",
-                transition: "all .3s",
-              }}/>
-            ))}
-          </div>
-        </div>
+      <div
+        style={{
+          position: "absolute",
+          bottom: "32px",
+          left: "50%",
+          transform: "translateX(-50%)",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: "6px",
+          animation: "float 2.5s ease-in-out infinite",
+        }}
+      >
+        <span
+          style={{
+            fontSize: "9px",
+            letterSpacing: "3px",
+            color: "rgba(0,180,255,0.32)",
+            fontFamily: "'Courier New',monospace",
+          }}
+        >
+          SCROLL
+        </span>
+        <div
+          style={{
+            width: "1px",
+            height: "30px",
+            background:
+              "linear-gradient(180deg,rgba(0,207,255,0.45),transparent)",
+          }}
+        />
       </div>
     </section>
   );
 }
 
-/* ── Scene Renderer (Canvas) ─────────────────────────────────── */
-function SceneRenderer({ step, playing, danger }) {
+/* ── About ───────────────────────────────────────────────────── */
+function About() {
   const ref = useRef(null);
-  const rafRef = useRef(null);
-  const tRef = useRef(0);
-  const lastRef = useRef(null);
-  const stepRef = useRef(step);
-  const dangerRef = useRef(danger);
-  useEffect(() => { stepRef.current = step; }, [step]);
-  useEffect(() => { dangerRef.current = danger; }, [danger]);
-
+  const [vis, setVis] = useState(false);
   useEffect(() => {
-    const c = ref.current;
-    const ctx = c.getContext("2d");
-    const W = c.width, H = c.height;
-
-    const render = (now) => {
-      const dt = Math.min(now - (lastRef.current || now), 50) / 1000;
-      lastRef.current = now;
-      tRef.current += dt;
-      const t = tRef.current;
-      const st = stepRef.current;
-      const dng = dangerRef.current;
-
-      ctx.clearRect(0, 0, W, H);
-
-      // Night sky bg
-      const sky = ctx.createLinearGradient(0, 0, 0, H);
-      sky.addColorStop(0, "#020008");
-      sky.addColorStop(0.6, "#0a0015");
-      sky.addColorStop(1, "#180010");
-      ctx.fillStyle = sky;
-      ctx.fillRect(0, 0, W, H);
-
-      // Stars
-      for (let i = 0; i < 60; i++) {
-        const sx = ((i * 137.5) % W);
-        const sy = ((i * 89.3) % (H * 0.55));
-        const sa = 0.3 + Math.sin(t * 0.8 + i) * 0.3;
-        ctx.save();
-        ctx.globalAlpha = sa;
-        ctx.fillStyle = "#fff";
-        ctx.beginPath();
-        ctx.arc(sx, sy, 0.8, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.restore();
-      }
-
-      // Road
-      const road = ctx.createLinearGradient(0, H * 0.55, 0, H);
-      road.addColorStop(0, "#1a0820");
-      road.addColorStop(1, "#0d0015");
-      ctx.fillStyle = road;
-      ctx.beginPath();
-      ctx.moveTo(W * 0.1, H * 0.55);
-      ctx.lineTo(W * 0.9, H * 0.55);
-      ctx.lineTo(W, H);
-      ctx.lineTo(0, H);
-      ctx.closePath();
-      ctx.fill();
-
-      // Road markings
-      ctx.save();
-      ctx.strokeStyle = "rgba(255,45,107,0.15)";
-      ctx.lineWidth = 2;
-      ctx.setLineDash([30, 20]);
-      ctx.beginPath();
-      ctx.moveTo(W * 0.5, H * 0.57);
-      ctx.lineTo(W * 0.5, H);
-      ctx.stroke();
-      ctx.restore();
-
-      // Street light glow
-      const lampX = W * 0.5;
-      const lampGrd = ctx.createRadialGradient(lampX, H * 0.3, 0, lampX, H * 0.5, W * 0.35);
-      lampGrd.addColorStop(0, `rgba(255,150,200,${0.06 + Math.sin(t * 0.3) * 0.01})`);
-      lampGrd.addColorStop(1, "rgba(0,0,0,0)");
-      ctx.fillStyle = lampGrd;
-      ctx.fillRect(0, 0, W, H);
-
-      // ── GIRL (center) ──────────────────────────────────────
-      const gx = W * 0.5, gy = H * 0.62;
-      const bob = Math.sin(t * 1.5) * 2;
-
-      // Girl glow aura
-      if (dng) {
-        const aura = ctx.createRadialGradient(gx, gy, 0, gx, gy, 55);
-        aura.addColorStop(0, `rgba(255,0,80,${0.12 + Math.sin(t * 4) * 0.06})`);
-        aura.addColorStop(1, "rgba(0,0,0,0)");
-        ctx.fillStyle = aura;
-        ctx.fillRect(0, 0, W, H);
-      }
-
-      // Body
-      ctx.save();
-      ctx.translate(gx, gy + bob);
-      // Dress
-      ctx.fillStyle = "#c2006a";
-      ctx.beginPath();
-      ctx.moveTo(-8, 0);
-      ctx.quadraticCurveTo(-16, 30, -14, 54);
-      ctx.lineTo(14, 54);
-      ctx.quadraticCurveTo(16, 30, 8, 0);
-      ctx.closePath();
-      ctx.fill();
-      // Torso
-      ctx.fillStyle = "#e8a0c0";
-      ctx.beginPath();
-      ctx.roundRect(-7, -22, 14, 22, 3);
-      ctx.fill();
-      // Head
-      ctx.fillStyle = "#f0c8a0";
-      ctx.beginPath();
-      ctx.arc(0, -30, 10, 0, Math.PI * 2);
-      ctx.fill();
-      // Hair
-      ctx.fillStyle = "#1a0010";
-      ctx.beginPath();
-      ctx.arc(0, -34, 10, Math.PI, 0);
-      ctx.fill();
-      ctx.beginPath();
-      ctx.moveTo(8, -34);
-      ctx.quadraticCurveTo(14, -20, 10, -5);
-      ctx.lineWidth = 6;
-      ctx.strokeStyle = "#1a0010";
-      ctx.stroke();
-      // Phone (step 2)
-      if (st === 2) {
-        ctx.fillStyle = "#333";
-        ctx.beginPath();
-        ctx.roundRect(10, -15, 12, 20, 2);
-        ctx.fill();
-        ctx.fillStyle = "#ff2d6b";
-        ctx.beginPath();
-        ctx.roundRect(11, -14, 10, 18, 1);
-        ctx.fill();
-        // App icon on phone
-        ctx.fillStyle = "#fff";
-        ctx.beginPath();
-        ctx.arc(16, -5, 5, 0, Math.PI * 2);
-        ctx.fill();
-      }
-      ctx.restore();
-
-      // ── SHIELDHER SHIELD around girl (step 2+) ─────────────
-      if (st >= 2) {
-        const shieldAlpha = Math.min((st - 1) * 0.5, 0.8);
-        const shieldR = 70 + Math.sin(t * 2) * 5;
-        ctx.save();
-        ctx.globalAlpha = shieldAlpha * 0.5;
-        ctx.strokeStyle = "#ff2d6b";
-        ctx.lineWidth = 2;
-        ctx.shadowColor = "#ff2d6b";
-        ctx.shadowBlur = 20;
-        ctx.beginPath();
-        ctx.arc(gx, gy + 20, shieldR, 0, Math.PI * 2);
-        ctx.stroke();
-        ctx.restore();
-        // Ripple
-        const rph = (t * 0.7) % 1;
-        ctx.save();
-        ctx.globalAlpha = (1 - rph) * 0.35 * shieldAlpha;
-        ctx.strokeStyle = "#ff2d6b";
-        ctx.lineWidth = 1.5;
-        ctx.beginPath();
-        ctx.arc(gx, gy + 20, shieldR + rph * 50, 0, Math.PI * 2);
-        ctx.stroke();
-        ctx.restore();
-      }
-
-      // ── MEN (blurry threatening figures) ───────────────────
-      if (st >= 1) {
-        const menAlpha = Math.min((t - 0.5) * 0.8, 0.9);
-        // Left man
-        drawBlurryMan(ctx, W * 0.22, H * 0.65, -1, t, menAlpha, dng);
-        // Right man
-        drawBlurryMan(ctx, W * 0.78, H * 0.65, 1, t, menAlpha, dng);
-      }
-
-      // ── METHOD 2: Voice wave (step 3) ──────────────────────
-      if (st === 3) {
-        ctx.save();
-        ctx.translate(gx, gy - 50 + bob);
-        for (let i = 0; i < 7; i++) {
-          const bh = 4 + Math.sin(t * 8 + i * 0.8) * 14;
-          ctx.fillStyle = `rgba(255,45,107,${0.5 + Math.sin(t * 6 + i) * 0.3})`;
-          ctx.beginPath();
-          ctx.roundRect(-21 + i * 7, -bh / 2, 5, bh, 2);
-          ctx.fill();
-        }
-        ctx.restore();
-        // "DANGER" text
-        ctx.save();
-        ctx.font = `bold 11px 'Orbitron', monospace`;
-        ctx.fillStyle = `rgba(255,50,100,${0.6 + Math.sin(t * 4) * 0.3})`;
-        ctx.textAlign = "center";
-        ctx.shadowColor = "#ff2d6b";
-        ctx.shadowBlur = 12;
-        ctx.fillText('"DANGER"', gx, gy - 70 + bob);
-        ctx.restore();
-      }
-
-      // ── METHOD 3: Wearable (step 4) ─────────────────────────
-      if (st === 4) {
-        // Wearable brooch at chest
-        const bx = gx + 2, by = gy - 12 + bob;
-        ctx.save();
-        ctx.fillStyle = "#ff2d6b";
-        ctx.shadowColor = "#ff2d6b";
-        ctx.shadowBlur = 20 + Math.sin(t * 6) * 10;
-        ctx.beginPath();
-        ctx.arc(bx, by, 6, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.restore();
-        // GPS, GSM, CAM labels radiating out
-        const labels = [["GPS", -70, -30], ["GSM", 70, -30], ["CAM", 0, -65]];
-        labels.forEach(([lbl, dx, dy], i) => {
-          const ph = ((t * 0.8 + i / 3) % 1);
-          ctx.save();
-          ctx.globalAlpha = 1 - ph;
-          ctx.strokeStyle = "#ff2d6b";
-          ctx.lineWidth = 1;
-          ctx.setLineDash([4, 4]);
-          ctx.beginPath();
-          ctx.moveTo(bx, by);
-          ctx.lineTo(bx + dx * ph, by + dy * ph);
-          ctx.stroke();
-          ctx.restore();
-          ctx.save();
-          ctx.globalAlpha = 0.8;
-          ctx.font = `bold 9px 'Orbitron', monospace`;
-          ctx.fillStyle = "#ff9dbb";
-          ctx.textAlign = "center";
-          ctx.fillText(lbl, bx + dx, by + dy - 4);
-          ctx.restore();
-        });
-      }
-
-      // ── STEP 5: Help coming ─────────────────────────────────
-      if (st === 5) {
-        // Police car from left
-        const pcx = W * 0.05 + (t % 4) * W * 0.1;
-        ctx.save();
-        ctx.fillStyle = "#4040ff";
-        ctx.beginPath();
-        ctx.roundRect(pcx, H * 0.72, 40, 20, 4);
-        ctx.fill();
-        ctx.fillStyle = "#ff0000";
-        ctx.beginPath();
-        ctx.roundRect(pcx + 4, H * 0.7, 32, 8, 2);
-        ctx.fill();
-        // Siren flash
-        ctx.fillStyle = Math.sin(t * 12) > 0 ? "#ff0000" : "#0000ff";
-        ctx.shadowColor = Math.sin(t * 12) > 0 ? "#ff0000" : "#0000ff";
-        ctx.shadowBlur = 20;
-        ctx.beginPath();
-        ctx.arc(pcx + 20, H * 0.7, 4, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.restore();
-
-        // Person from right
-        const perx = W * 0.95 - (t % 4) * W * 0.08;
-        ctx.save();
-        ctx.translate(perx, H * 0.68);
-        ctx.fillStyle = "#ff9dbb";
-        ctx.beginPath();
-        ctx.arc(0, -20, 8, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = "#e05080";
-        ctx.beginPath();
-        ctx.roundRect(-6, -12, 12, 18, 2);
-        ctx.fill();
-        ctx.restore();
-
-        // "HELP INCOMING" label
-        ctx.save();
-        ctx.font = `bold 14px 'Orbitron', monospace`;
-        ctx.fillStyle = "#ff2d6b";
-        ctx.textAlign = "center";
-        ctx.shadowColor = "#ff2d6b";
-        ctx.shadowBlur = 20;
-        ctx.globalAlpha = 0.8 + Math.sin(t * 4) * 0.2;
-        ctx.fillText("HELP IS COMING", W / 2, H * 0.3);
-        ctx.restore();
-      }
-
-      rafRef.current = requestAnimationFrame(render);
-    };
-
-    rafRef.current = requestAnimationFrame(render);
-    return () => cancelAnimationFrame(rafRef.current);
-  }, []);
-
-  return (
-    <canvas
-      ref={ref}
-      width={800}
-      height={420}
-      style={{ width: "100%", height: "420px", display: "block" }}
-    />
-  );
-}
-
-function drawBlurryMan(ctx, x, y, dir, t, alpha, danger) {
-  ctx.save();
-  ctx.filter = "blur(3px)";
-  ctx.globalAlpha = alpha * 0.75;
-  ctx.translate(x, y);
-  // Body silhouette
-  ctx.fillStyle = danger ? "rgba(120,0,30,0.9)" : "rgba(40,0,20,0.8)";
-  ctx.beginPath();
-  ctx.roundRect(-10, -40, 20, 45, 3);
-  ctx.fill();
-  // Head
-  ctx.beginPath();
-  ctx.arc(0, -48, 12, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.restore();
-
-  if (danger) {
-    ctx.save();
-    ctx.globalAlpha = alpha * 0.4;
-    ctx.fillStyle = "rgba(255,0,50,0.4)";
-    ctx.filter = "blur(8px)";
-    ctx.beginPath();
-    ctx.arc(x, y - 24, 25, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.restore();
-  }
-}
-
-/* ── Three Methods Cards ────────────────────────────────────── */
-function Methods() {
-  const methods = [
-    {
-      num: "01",
-      icon: "📱",
-      title: "App Activation",
-      color: "#ff2d6b",
-      glow: "rgba(255,45,107,0.3)",
-      desc: "Open ShieldHer and tap the emergency button. Your live GPS location is instantly shared with emergency contacts via call and SMS. Real-time tracking begins immediately.",
-      features: ["Live GPS Tracking", "Auto Call + SMS Alert", "Location History Log", "Panic Button"],
-    },
-    {
-      num: "02",
-      icon: "🎙",
-      title: 'Voice: "Danger"',
-      color: "#ff6b9d",
-      glow: "rgba(255,107,157,0.3)",
-      desc: `Say the trigger word "Danger" and ShieldHer's AI instantly activates. No need to unlock your phone. Calls and messages are automatically sent to all emergency contacts.`,
-      features: ["AI Voice Recognition", "Hands-Free Activation", "Auto Emergency Calls", "SMS with Location"],
-    },
-    {
-      num: "03",
-      icon: "💎",
-      title: "Wearable Brooch",
-      color: "#e040fb",
-      glow: "rgba(224,64,251,0.3)",
-      desc: "Tap the elegantly designed brooch. Built-in GPS+GSM module activates instantly, camera captures proof stored on cloud, and nearby police stations are notified simultaneously.",
-      features: ["Built-in GPS + GSM", "Camera Evidence Capture", "Cloud Storage Proof", "Police Auto-Alert"],
-    },
-  ];
-
-  return (
-    <section style={{ padding: "80px 24px", position: "relative" }}>
-      <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-        <div style={{ textAlign: "center", marginBottom: "56px" }}>
-          <div style={{ fontSize: "10px", letterSpacing: "5px", color: "#ff2d6b", marginBottom: "12px", fontFamily: "'Orbitron', monospace" }}>
-            ◈ THREE LAYERS OF PROTECTION
-          </div>
-          <h2 style={{ fontFamily: "'Orbitron', monospace", fontSize: "clamp(1.5rem,3vw,2.2rem)", color: "#fff", letterSpacing: "2px" }}>
-            HOW SHE STAYS SAFE
-          </h2>
-        </div>
-
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: "24px" }}>
-          {methods.map((m, idx) => (
-            <MethodCard key={idx} method={m} delay={idx * 150} />
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function MethodCard({ method: m, delay }) {
-  const [hovered, setHovered] = useState(false);
-  const [visible, setVisible] = useState(false);
-  const ref = useRef(null);
-
-  useEffect(() => {
-    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setVisible(true); }, { threshold: 0.2 });
+    const obs = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting) setVis(true);
+      },
+      { threshold: 0.2 },
+    );
     obs.observe(ref.current);
     return () => obs.disconnect();
   }, []);
+  return (
+    <section
+      ref={ref}
+      id="about"
+      style={{
+        padding: "80px 48px",
+        maxWidth: "1100px",
+        margin: "0 auto",
+        position: "relative",
+        zIndex: 1,
+      }}
+    >
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: "64px",
+          alignItems: "center",
+        }}
+      >
+        <div
+          style={{
+            opacity: vis ? 1 : 0,
+            transform: vis ? "translateX(0)" : "translateX(-40px)",
+            transition: "all .8s ease",
+          }}
+        >
+          <div
+            style={{
+              fontSize: "9px",
+              letterSpacing: "5px",
+              color: "rgba(0,207,255,0.42)",
+              marginBottom: "14px",
+              fontFamily: "'Courier New',monospace",
+            }}
+          >
+            ◈ ABOUT SHIELDHER
+          </div>
+          <h2
+            style={{
+              fontFamily: "'Orbitron',monospace",
+              fontSize: "clamp(1.4rem,2.5vw,2rem)",
+              fontWeight: 700,
+              letterSpacing: "2px",
+              color: "#7de8ff",
+              lineHeight: 1.3,
+              marginBottom: "20px",
+              textShadow: "0 0 22px rgba(0,207,255,0.28)",
+            }}
+          >
+            YOUR PERSONAL
+            <br />
+            SAFETY GUARDIAN
+          </h2>
+          <div
+            style={{
+              width: "48px",
+              height: "2px",
+              background: "linear-gradient(90deg,#00cfff,transparent)",
+              marginBottom: "20px",
+            }}
+          />
+          <p
+            style={{
+              fontSize: "15px",
+              color: "rgba(168,240,255,0.52)",
+              lineHeight: 1.8,
+              marginBottom: "16px",
+              letterSpacing: "0.3px",
+            }}
+          >
+            ShieldHer is an AI-powered women safety platform that combines smart
+            hardware, voice recognition, and real-time GPS tracking to create an
+            invisible shield around every woman.
+          </p>
+          <p
+            style={{
+              fontSize: "14px",
+              color: "rgba(0,180,255,0.38)",
+              lineHeight: 1.8,
+              letterSpacing: "0.3px",
+            }}
+          >
+            Whether you're commuting late at night, travelling solo, or just
+            need peace of mind — ShieldHer activates in seconds and alerts your
+            emergency network instantly.
+          </p>
+        </div>
+        <div
+          style={{
+            opacity: vis ? 1 : 0,
+            transform: vis ? "translateX(0)" : "translateX(40px)",
+            transition: "all .8s ease .2s",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <ShieldViz />
+        </div>
+      </div>
+    </section>
+  );
+}
 
+function ShieldViz() {
   return (
     <div
-      ref={ref}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
       style={{
-        background: hovered ? "rgba(20,0,30,0.95)" : "rgba(12,0,20,0.85)",
-        border: `1px solid ${hovered ? m.color : "rgba(255,45,107,0.2)"}`,
-        borderRadius: "16px",
-        padding: "36px 28px",
-        position: "relative", overflow: "hidden",
-        transition: "all 0.35s cubic-bezier(0.23,1,0.32,1)",
-        boxShadow: hovered ? `0 0 50px ${m.glow}, 0 20px 60px rgba(0,0,0,0.4)` : "0 4px 30px rgba(0,0,0,0.3)",
-        transform: hovered ? "translateY(-6px)" : visible ? "translateY(0)" : "translateY(30px)",
-        opacity: visible ? 1 : 0,
-        transitionDelay: `${delay}ms`,
-        cursor: "default",
-      }}>
-      {/* Top accent */}
-      <div style={{
-        position: "absolute", top: 0, left: "15%", right: "15%", height: "2px",
-        background: `linear-gradient(90deg,transparent,${m.color},transparent)`,
-        opacity: hovered ? 1 : 0.4, transition: "opacity .3s",
-      }}/>
-
-      {/* Number */}
-      <div style={{
-        fontFamily: "'Orbitron', monospace", fontSize: "3rem",
-        fontWeight: 900, color: m.color, opacity: 0.15,
-        position: "absolute", top: "16px", right: "20px",
-        lineHeight: 1,
-      }}>{m.num}</div>
-
-      {/* Icon */}
-      <div style={{
-        fontSize: "2.5rem", marginBottom: "20px",
-        filter: hovered ? `drop-shadow(0 0 12px ${m.color})` : "none",
-        transition: "filter .3s",
-      }}>{m.icon}</div>
-
-      {/* Title */}
-      <h3 style={{
-        fontFamily: "'Orbitron', monospace", fontSize: "1rem",
-        fontWeight: 700, color: m.color, letterSpacing: "2px",
-        marginBottom: "14px",
-        textShadow: hovered ? `0 0 20px ${m.color}` : "none",
-        transition: "text-shadow .3s",
-      }}>{m.title}</h3>
-
-      <p style={{
-        fontSize: "14px", color: "rgba(240,192,216,0.65)",
-        lineHeight: 1.7, marginBottom: "24px",
-      }}>{m.desc}</p>
-
-      {/* Features */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-        {m.features.map((f, i) => (
-          <div key={i} style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <div style={{
-              width: "6px", height: "6px", borderRadius: "50%",
-              background: m.color,
-              boxShadow: `0 0 8px ${m.color}`,
-              flexShrink: 0,
-            }}/>
-            <span style={{ fontSize: "13px", color: "rgba(240,192,216,0.7)", letterSpacing: "0.5px" }}>{f}</span>
-          </div>
-        ))}
+        position: "relative",
+        width: "220px",
+        height: "220px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          borderRadius: "50%",
+          border: "1px solid rgba(0,207,255,0.1)",
+        }}
+      />
+      <div
+        style={{
+          position: "absolute",
+          inset: "10px",
+          borderRadius: "50%",
+          border: "1.5px solid rgba(0,207,255,0.22)",
+          borderTopColor: "#00cfff",
+          borderRightColor: "transparent",
+          animation: "spin 7s linear infinite",
+        }}
+      />
+      <div
+        style={{
+          position: "absolute",
+          inset: "22px",
+          borderRadius: "50%",
+          border: "1px solid rgba(0,207,255,0.12)",
+          borderBottomColor: "#7de8ff",
+          borderLeftColor: "transparent",
+          animation: "spinR 10s linear infinite",
+        }}
+      />
+      <div
+        style={{
+          position: "absolute",
+          inset: "36px",
+          borderRadius: "50%",
+          background:
+            "radial-gradient(circle,rgba(0,80,180,0.14) 0%,transparent 70%)",
+          animation: "pulseRing 3s ease-in-out infinite",
+        }}
+      />
+      <div
+        style={{
+          position: "relative",
+          zIndex: 2,
+          animation: "float 3s ease-in-out infinite",
+        }}
+      >
+        <svg width="80" height="90" viewBox="0 0 80 90" fill="none">
+          <path
+            d="M40 4L72 16L72 42C72 62 58 76 40 86C22 76 8 62 8 42L8 16Z"
+            fill="rgba(0,100,200,0.15)"
+            stroke="#00cfff"
+            strokeWidth="2"
+          />
+          <path
+            d="M40 16L62 25L62 42C62 56 52 66 40 74C28 66 18 56 18 42L18 25Z"
+            fill="rgba(0,150,255,0.07)"
+            stroke="rgba(0,207,255,0.38)"
+            strokeWidth="1"
+          />
+          <circle
+            cx="40"
+            cy="42"
+            r="8"
+            fill="rgba(0,207,255,0.28)"
+            stroke="#00cfff"
+            strokeWidth="1.5"
+          />
+          <line
+            x1="40"
+            y1="20"
+            x2="40"
+            y2="34"
+            stroke="#7de8ff"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+          />
+          <line
+            x1="40"
+            y1="50"
+            x2="40"
+            y2="62"
+            stroke="#7de8ff"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+          />
+        </svg>
       </div>
-
-      {/* Corner marks */}
-      {[{ top: 10, left: 10, borderTop: `1px solid ${m.color}`, borderLeft: `1px solid ${m.color}` },
-        { top: 10, right: 10, borderTop: `1px solid ${m.color}`, borderRight: `1px solid ${m.color}` },
-        { bottom: 10, left: 10, borderBottom: `1px solid ${m.color}`, borderLeft: `1px solid ${m.color}` },
-        { bottom: 10, right: 10, borderBottom: `1px solid ${m.color}`, borderRight: `1px solid ${m.color}` }]
-        .map((s, i) => (
-          <div key={i} style={{
-            position: "absolute", width: "12px", height: "12px",
-            opacity: hovered ? 1 : 0.3, transition: "opacity .3s", ...s,
-          }}/>
-        ))}
+      <div
+        style={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          width: "6px",
+          height: "6px",
+          marginTop: "-3px",
+          marginLeft: "-3px",
+          borderRadius: "50%",
+          background: "#00cfff",
+          boxShadow: "0 0 8px #00cfff",
+          animation: "orbitDot 4.5s linear infinite",
+        }}
+      />
     </div>
   );
 }
 
-/* ── Features strip ─────────────────────────────────────────── */
-function Features() {
-  const feats = [
-    { icon: "🛡", label: "AI Threat Detection" },
-    { icon: "📍", label: "Real-time GPS" },
-    { icon: "📞", label: "Auto Emergency Call" },
-    { icon: "📹", label: "Cloud Evidence Capture" },
-    { icon: "🚔", label: "Police Auto-Alert" },
-    { icon: "💬", label: "SMS Broadcast" },
-    { icon: "⌚", label: "Wearable Integration" },
-    { icon: "☁️", label: "Cloud Backup" },
+/* ── Magazine Placeholder ────────────────────────────────────── */
+function Magazine() {
+  const ref = useRef(null);
+  const [vis, setVis] = useState(false);
+  useEffect(() => {
+    const obs = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting) setVis(true);
+      },
+      { threshold: 0.12 },
+    );
+    obs.observe(ref.current);
+    return () => obs.disconnect();
+  }, []);
+  const slots = [
+    { tag: "COVER STORY", sub: "Technology for Safety" },
+    { tag: "FEATURE", sub: "Innovation in Security" },
+    { tag: "SPOTLIGHT", sub: "Women Empowerment" },
+    { tag: "EXCLUSIVE", sub: "AI & Personal Safety" },
+    { tag: "REVIEW", sub: "ShieldHer In-Depth" },
+    { tag: "AWARD", sub: "Best Safety App 2025" },
   ];
   return (
-    <section style={{ padding: "60px 24px", borderTop: "1px solid rgba(255,45,107,0.1)", borderBottom: "1px solid rgba(255,45,107,0.1)" }}>
-      <div style={{ display: "flex", gap: "0", overflowX: "auto", justifyContent: "center", flexWrap: "wrap" }}>
-        {feats.map((f, i) => (
-          <div key={i} style={{
-            display: "flex", alignItems: "center", gap: "10px",
-            padding: "14px 28px",
-            borderRight: i < feats.length - 1 ? "1px solid rgba(255,45,107,0.15)" : "none",
-            flexShrink: 0,
-          }}>
-            <span style={{ fontSize: "18px" }}>{f.icon}</span>
-            <span style={{ fontSize: "12px", letterSpacing: "1.5px", color: "rgba(240,192,216,0.65)", fontFamily: "'Rajdhani', sans-serif", fontWeight: 600, textTransform: "uppercase" }}>{f.label}</span>
+    <section
+      ref={ref}
+      id="press"
+      style={{ padding: "80px 48px", position: "relative", zIndex: 1 }}
+    >
+      <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
+        <div
+          style={{
+            textAlign: "center",
+            marginBottom: "48px",
+            opacity: vis ? 1 : 0,
+            transform: vis ? "translateY(0)" : "translateY(20px)",
+            transition: "all .6s ease",
+          }}
+        >
+          <div
+            style={{
+              fontSize: "9px",
+              letterSpacing: "5px",
+              color: "rgba(0,207,255,0.42)",
+              marginBottom: "12px",
+              fontFamily: "'Courier New',monospace",
+            }}
+          >
+            ◈ FEATURED IN
+          </div>
+          <h2
+            style={{
+              fontFamily: "'Orbitron',monospace",
+              fontSize: "clamp(1.3rem,2.5vw,1.9rem)",
+              fontWeight: 700,
+              letterSpacing: "2px",
+              color: "#7de8ff",
+            }}
+          >
+            AS SEEN IN PRESS
+          </h2>
+        </div>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(3,1fr)",
+            gap: "20px",
+          }}
+        >
+          {slots.map((s, i) => (
+            <div
+              key={i}
+              style={{
+                aspectRatio: "3/4",
+                background: "rgba(4,14,40,0.75)",
+                border: "1px solid rgba(0,180,255,0.16)",
+                borderRadius: "10px",
+                position: "relative",
+                overflow: "hidden",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "10px",
+                cursor: "pointer",
+                opacity: vis ? 1 : 0,
+                transform: vis ? "translateY(0)" : "translateY(30px)",
+                transition: `opacity .5s ease ${i * 0.08}s, transform .5s ease ${i * 0.08}s, border-color .25s, box-shadow .25s`,
+                animation: vis
+                  ? `borderPulse ${3 + i * 0.4}s ease-in-out ${i * 0.3}s infinite`
+                  : undefined,
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = "rgba(0,207,255,0.48)";
+                e.currentTarget.style.boxShadow =
+                  "0 0 30px rgba(0,207,255,0.1)";
+                e.currentTarget.style.transform = "translateY(-4px)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = "rgba(0,180,255,0.16)";
+                e.currentTarget.style.boxShadow = "none";
+                e.currentTarget.style.transform = "translateY(0)";
+              }}
+            >
+              <div
+                style={{
+                  position: "absolute",
+                  left: 0,
+                  right: 0,
+                  height: "1px",
+                  background:
+                    "linear-gradient(90deg,transparent,rgba(0,207,255,0.22),transparent)",
+                  animation: `scanLine ${4 + i * 0.5}s linear ${i * 0.4}s infinite",pointerEvents:"none`,
+                }}
+              />
+              <div
+                style={{
+                  width: "48px",
+                  height: "48px",
+                  border: "1px dashed rgba(0,207,255,0.3)",
+                  borderRadius: "8px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  background: "rgba(0,207,255,0.03)",
+                }}
+              >
+                <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+                  <rect
+                    x="3"
+                    y="3"
+                    width="16"
+                    height="16"
+                    rx="2"
+                    stroke="rgba(0,207,255,0.38)"
+                    strokeWidth="1"
+                  />
+                  <line
+                    x1="11"
+                    y1="7"
+                    x2="11"
+                    y2="15"
+                    stroke="rgba(0,207,255,0.38)"
+                    strokeWidth="1.2"
+                    strokeLinecap="round"
+                  />
+                  <polyline
+                    points="7,10 11,7 15,10"
+                    stroke="rgba(0,207,255,0.38)"
+                    strokeWidth="1.2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    fill="none"
+                  />
+                </svg>
+              </div>
+              <div
+                style={{
+                  fontFamily: "'Courier New',monospace",
+                  fontSize: "9px",
+                  letterSpacing: "2px",
+                  color: "rgba(0,207,255,0.48)",
+                  textTransform: "uppercase",
+                }}
+              >
+                {s.tag}
+              </div>
+              <div
+                style={{
+                  fontSize: "11px",
+                  color: "rgba(168,240,255,0.32)",
+                  letterSpacing: "0.5px",
+                  textAlign: "center",
+                  padding: "0 12px",
+                }}
+              >
+                {s.sub}
+              </div>
+              <div
+                style={{
+                  fontSize: "9px",
+                  color: "rgba(0,180,255,0.28)",
+                  fontFamily: "'Courier New',monospace",
+                  letterSpacing: "1px",
+                }}
+              >
+                IMAGE COMING SOON
+              </div>
+              {[
+                {
+                  top: 8,
+                  left: 8,
+                  borderTop: "1px solid",
+                  borderLeft: "1px solid",
+                },
+                {
+                  top: 8,
+                  right: 8,
+                  borderTop: "1px solid",
+                  borderRight: "1px solid",
+                },
+                {
+                  bottom: 8,
+                  left: 8,
+                  borderBottom: "1px solid",
+                  borderLeft: "1px solid",
+                },
+                {
+                  bottom: 8,
+                  right: 8,
+                  borderBottom: "1px solid",
+                  borderRight: "1px solid",
+                },
+              ].map((st, j) => (
+                <div
+                  key={j}
+                  style={{
+                    position: "absolute",
+                    width: "10px",
+                    height: "10px",
+                    borderColor: "rgba(0,207,255,0.18)",
+                    ...st,
+                  }}
+                />
+              ))}
+            </div>
+          ))}
+        </div>
+        <p
+          style={{
+            textAlign: "center",
+            marginTop: "22px",
+            fontSize: "10px",
+            letterSpacing: "2px",
+            color: "rgba(0,180,255,0.28)",
+            fontFamily: "'Courier New',monospace",
+          }}
+        >
+          ◈ PROVIDE IMAGES — MAGAZINE FLIP EFFECT WILL BE APPLIED
+        </p>
+      </div>
+    </section>
+  );
+}
+
+/* ── Methods ─────────────────────────────────────────────────── */
+function Methods() {
+  const ref = useRef(null);
+  const [vis, setVis] = useState(false);
+  useEffect(() => {
+    const obs = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting) setVis(true);
+      },
+      { threshold: 0.12 },
+    );
+    obs.observe(ref.current);
+    return () => obs.disconnect();
+  }, []);
+
+  const methods = [
+    {
+      id: "01",
+      tag: "METHOD ONE",
+      color: "#00cfff",
+      glow: "rgba(0,207,255,0.22)",
+      border: "rgba(0,207,255,0.38)",
+      title: "Manual App Activation",
+      icon: (
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <rect
+            x="9"
+            y="3"
+            width="14"
+            height="26"
+            rx="3"
+            stroke="#00cfff"
+            strokeWidth="1.5"
+          />
+          <circle cx="16" cy="23" r="1.8" fill="#00cfff" />
+          <circle cx="16" cy="13" r="4.5" stroke="#7de8ff" strokeWidth="1.2" />
+          <path
+            d="M13 13L15.5 15.5L19 11"
+            stroke="#00cfff"
+            strokeWidth="1.3"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            fill="none"
+          />
+        </svg>
+      ),
+      steps: [
+        "Open ShieldHer app",
+        "Tap the SOS shield button",
+        "System activates instantly",
+      ],
+      desc: "Open the ShieldHer app and tap the shield button. Your live GPS is immediately shared with all emergency contacts via call and SMS. Real-time tracking stays active until you deactivate.",
+      feat: [
+        "One-tap SOS button",
+        "Live GPS sharing",
+        "Auto call + SMS alert",
+        "Full location history",
+      ],
+    },
+    {
+      id: "02",
+      tag: "METHOD TWO",
+      color: "#7de8ff",
+      glow: "rgba(125,232,255,0.18)",
+      border: "rgba(125,232,255,0.32)",
+      title: "Voice Trigger Word",
+      icon: (
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <rect
+            x="12"
+            y="4"
+            width="8"
+            height="14"
+            rx="4"
+            stroke="#7de8ff"
+            strokeWidth="1.5"
+          />
+          <path
+            d="M7 16C7 20.4 11 24 16 24C21 24 25 20.4 25 16"
+            stroke="#7de8ff"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            fill="none"
+          />
+          <line
+            x1="16"
+            y1="24"
+            x2="16"
+            y2="28"
+            stroke="#7de8ff"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+          />
+          <line
+            x1="12"
+            y1="28"
+            x2="20"
+            y2="28"
+            stroke="#7de8ff"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+          />
+          {[5, 9, 13, 17, 21, 25].map((x, i) => (
+            <line
+              key={i}
+              x1={x}
+              y1={i % 2 === 0 ? 17 : 15}
+              x2={x}
+              y2={i % 2 === 0 ? 19 : 21}
+              stroke="rgba(125,232,255,0.5)"
+              strokeWidth="1"
+              strokeLinecap="round"
+            />
+          ))}
+        </svg>
+      ),
+      steps: [
+        "Say your personalized word",
+        "AI detects voice instantly",
+        "Hands-free SOS activated",
+      ],
+      desc: 'Say your personalized trigger word — "Shield", "Help", or any word you set — and ShieldHer\'s AI activates instantly. No need to unlock your phone. Emergency calls and location SMS are sent automatically.',
+      feat: [
+        "AI voice recognition",
+        "Custom trigger word",
+        "Works with locked phone",
+        "Hands-free emergency SOS",
+      ],
+    },
+    {
+      id: "03",
+      tag: "METHOD THREE",
+      color: "#5bc8ff",
+      glow: "rgba(91,200,255,0.18)",
+      border: "rgba(91,200,255,0.32)",
+      title: "Physical Wearable Button",
+      icon: (
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <circle cx="16" cy="16" r="11" stroke="#5bc8ff" strokeWidth="1.5" />
+          <circle
+            cx="16"
+            cy="16"
+            r="7"
+            stroke="rgba(91,200,255,0.4)"
+            strokeWidth="1"
+          />
+          <circle
+            cx="16"
+            cy="16"
+            r="3.5"
+            fill="rgba(91,200,255,0.22)"
+            stroke="#5bc8ff"
+            strokeWidth="1"
+          />
+          <circle cx="16" cy="16" r="1.2" fill="#5bc8ff" />
+          {[0, 45, 90, 135, 180, 225, 270, 315].map((deg, i) => {
+            const rad = (deg * Math.PI) / 180,
+              x1 = 16 + Math.cos(rad) * 8,
+              y1 = 16 + Math.sin(rad) * 8,
+              x2 = 16 + Math.cos(rad) * 10,
+              y2 = 16 + Math.sin(rad) * 10;
+            return (
+              <line
+                key={i}
+                x1={x1}
+                y1={y1}
+                x2={x2}
+                y2={y2}
+                stroke="#5bc8ff"
+                strokeWidth="1"
+                strokeLinecap="round"
+              />
+            );
+          })}
+        </svg>
+      ),
+      steps: [
+        "Tap your wearable brooch",
+        "GPS + GSM + Camera on",
+        "Police + contacts notified",
+      ],
+      desc: "Tap the elegantly designed wearable brooch — built-in GPS and GSM module activates immediately. Camera captures proof stored on cloud. Emergency contacts and nearby police station are notified simultaneously within seconds.",
+      feat: [
+        "Built-in GPS + GSM module",
+        "Camera captures evidence",
+        "Cloud storage for proof",
+        "Police station auto-alert",
+      ],
+    },
+  ];
+
+  return (
+    <section
+      ref={ref}
+      id="how-it-works"
+      style={{ padding: "100px 48px", position: "relative", zIndex: 1 }}
+    >
+      <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
+        <div
+          style={{
+            textAlign: "center",
+            marginBottom: "64px",
+            opacity: vis ? 1 : 0,
+            transform: vis ? "translateY(0)" : "translateY(24px)",
+            transition: "all .6s ease",
+          }}
+        >
+          <div
+            style={{
+              fontSize: "9px",
+              letterSpacing: "5px",
+              color: "rgba(0,207,255,0.42)",
+              marginBottom: "14px",
+              fontFamily: "'Courier New',monospace",
+            }}
+          >
+            ◈ THREE LAYERS OF PROTECTION
+          </div>
+          <h2
+            style={{
+              fontFamily: "'Orbitron',monospace",
+              fontSize: "clamp(1.5rem,3vw,2.3rem)",
+              fontWeight: 700,
+              letterSpacing: "3px",
+              color: "#7de8ff",
+              textShadow: "0 0 26px rgba(0,207,255,0.28)",
+            }}
+          >
+            HOW TO ACTIVATE SHIELDHER
+          </h2>
+          <div
+            style={{
+              height: "1px",
+              width: "200px",
+              margin: "18px auto 0",
+              background:
+                "linear-gradient(90deg,transparent,rgba(0,207,255,0.45),transparent)",
+            }}
+          />
+        </div>
+
+        {/* Three cards in one row */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(3,1fr)",
+            gap: "24px",
+            alignItems: "stretch",
+          }}
+        >
+          {methods.map((m, i) => (
+            <MethodCard key={i} m={m} i={i} vis={vis} />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function MethodCard({ m, i, vis }) {
+  const [hov, setHov] = useState(false);
+  return (
+    <div
+      onMouseEnter={() => setHov(true)}
+      onMouseLeave={() => setHov(false)}
+      style={{
+        position: "relative",
+        background: hov ? "rgba(6,22,55,0.95)" : "rgba(4,14,40,0.85)",
+        border: `1px solid ${hov ? m.border : "rgba(0,180,255,0.15)"}`,
+        borderRadius: "14px",
+        padding: "36px 28px 32px",
+        overflow: "hidden",
+        display: "flex",
+        flexDirection: "column",
+        boxShadow: hov
+          ? `0 0 50px ${m.glow}, 0 24px 60px rgba(0,0,0,0.4)`
+          : "0 4px 28px rgba(0,0,0,0.28)",
+        transform: hov
+          ? "translateY(-10px)"
+          : vis
+            ? "translateY(0)"
+            : "translateY(36px)",
+        opacity: vis ? 1 : 0,
+        transition: `transform .38s cubic-bezier(0.23,1,0.32,1), box-shadow .35s, border-color .3s, background .3s, opacity .55s ${i * 130}ms`,
+        cursor: "default",
+      }}
+    >
+      {/* Scan line on hover */}
+      {hov && (
+        <div
+          style={{
+            position: "absolute",
+            left: 0,
+            right: 0,
+            height: "1px",
+            background: `linear-gradient(90deg,transparent,${m.color},transparent)`,
+            animation: "scanLine 2.5s linear infinite",
+            pointerEvents: "none",
+          }}
+        />
+      )}
+
+      {/* Top glow accent */}
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: "18%",
+          right: "18%",
+          height: "2px",
+          background: `linear-gradient(90deg,transparent,${m.color},transparent)`,
+          opacity: hov ? 1 : 0.35,
+          transition: "opacity .3s",
+        }}
+      />
+
+      {/* Big background number */}
+      <div
+        style={{
+          position: "absolute",
+          top: "12px",
+          right: "16px",
+          fontFamily: "'Orbitron',monospace",
+          fontSize: "3.8rem",
+          fontWeight: 900,
+          color: m.color,
+          opacity: 0.06,
+          lineHeight: 1,
+          userSelect: "none",
+          pointerEvents: "none",
+        }}
+      >
+        {m.id}
+      </div>
+
+      {/* Tag */}
+      <div
+        style={{
+          fontFamily: "'Courier New',monospace",
+          fontSize: "8px",
+          letterSpacing: "3px",
+          color: m.color,
+          opacity: 0.6,
+          marginBottom: "20px",
+        }}
+      >
+        {m.tag}
+      </div>
+
+      {/* Icon box */}
+      <div
+        style={{
+          width: "64px",
+          height: "64px",
+          border: `1px solid ${hov ? m.border : "rgba(0,180,255,0.14)"}`,
+          borderRadius: "12px",
+          background: hov ? `rgba(0,100,200,0.1)` : "rgba(0,40,100,0.05)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          boxShadow: hov ? `0 0 20px ${m.glow}` : "none",
+          transition: "all .3s",
+          marginBottom: "20px",
+          animation: hov ? "iconPulse 2s ease-in-out infinite" : "none",
+        }}
+      >
+        {m.icon}
+      </div>
+
+      {/* Title */}
+      <h3
+        style={{
+          fontFamily: "'Orbitron',monospace",
+          fontSize: ".95rem",
+          fontWeight: 700,
+          color: m.color,
+          letterSpacing: "1.5px",
+          marginBottom: "18px",
+          lineHeight: 1.3,
+          textShadow: hov ? `0 0 16px ${m.color}` : "none",
+          transition: "text-shadow .3s",
+        }}
+      >
+        {m.title}
+      </h3>
+
+      {/* Steps */}
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "9px",
+          marginBottom: "18px",
+        }}
+      >
+        {m.steps.map((s, si) => (
+          <div
+            key={si}
+            style={{ display: "flex", alignItems: "center", gap: "10px" }}
+          >
+            <div
+              style={{
+                width: "18px",
+                height: "18px",
+                borderRadius: "50%",
+                border: `1px solid ${m.color}`,
+                background: `${m.color}18`,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontFamily: "'Courier New',monospace",
+                fontSize: "8px",
+                color: m.color,
+                flexShrink: 0,
+                fontWeight: 700,
+              }}
+            >
+              {si + 1}
+            </div>
+            <span
+              style={{
+                fontSize: "12px",
+                color: "rgba(168,240,255,0.58)",
+                letterSpacing: "0.4px",
+              }}
+            >
+              {s}
+            </span>
           </div>
         ))}
       </div>
-    </section>
-  );
-}
 
-/* ── CTA ────────────────────────────────────────────────────── */
-function CTA() {
-  return (
-    <section style={{ padding: "100px 24px", textAlign: "center", position: "relative" }}>
-      <div style={{
-        position: "absolute", top: "50%", left: "50%",
-        transform: "translate(-50%,-50%)",
-        width: "500px", height: "500px", borderRadius: "50%",
-        background: "radial-gradient(circle,rgba(255,45,107,0.06) 0%,transparent 70%)",
-        pointerEvents: "none",
-      }}/>
-      <div style={{ position: "relative", zIndex: 1 }}>
-        <div style={{ fontSize: "10px", letterSpacing: "5px", color: "#ff2d6b", marginBottom: "16px", fontFamily: "'Orbitron', monospace" }}>
-          ◈ JOIN THE SHIELD
-        </div>
-        <h2 style={{
-          fontFamily: "'Orbitron', monospace",
-          fontSize: "clamp(1.8rem,4vw,3.2rem)",
-          color: "#fff", letterSpacing: "2px", marginBottom: "20px",
-          fontWeight: 900,
-        }}>
-          EVERY WOMAN DESERVES<br/>
-          <span style={{ color: "#ff2d6b", textShadow: "0 0 30px rgba(255,45,107,0.5)" }}>TO FEEL SAFE</span>
-        </h2>
-        <p style={{ fontSize: "16px", color: "rgba(240,192,216,0.6)", maxWidth: "480px", margin: "0 auto 40px", lineHeight: 1.7 }}>
-          Join thousands of women already protected by ShieldHer's intelligent safety network.
-        </p>
-        <button style={{
-          padding: "18px 52px",
-          background: "linear-gradient(135deg,#ff2d6b,#c2006a)",
-          border: "none", borderRadius: "8px",
-          color: "#fff", fontSize: "15px",
-          letterSpacing: "2.5px", fontFamily: "'Orbitron', monospace",
-          fontWeight: 700, cursor: "pointer",
-          boxShadow: "0 0 60px rgba(255,45,107,0.4)",
-          animation: "pulse-pink 2.5s ease-in-out infinite",
-          transition: "transform .2s",
+      {/* Divider */}
+      <div
+        style={{
+          height: "1px",
+          background: "rgba(0,180,255,0.1)",
+          marginBottom: "16px",
         }}
-        onMouseEnter={e => e.currentTarget.style.transform = "scale(1.06)"}
-        onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}>
-          GET PROTECTED NOW
-        </button>
+      />
+
+      {/* Description */}
+      <p
+        style={{
+          fontSize: "13px",
+          color: "rgba(168,240,255,0.48)",
+          lineHeight: 1.75,
+          marginBottom: "22px",
+          flexGrow: 1,
+        }}
+      >
+        {m.desc}
+      </p>
+
+      {/* Features */}
+      <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+        {m.feat.map((f, fi) => (
+          <div
+            key={fi}
+            style={{ display: "flex", alignItems: "center", gap: "8px" }}
+          >
+            <div
+              style={{
+                width: "5px",
+                height: "5px",
+                borderRadius: "50%",
+                background: m.color,
+                boxShadow: `0 0 6px ${m.color}`,
+                flexShrink: 0,
+                animation: `shimmer ${1.5 + fi * 0.3}s ease-in-out ${fi * 0.18}s infinite`,
+              }}
+            />
+            <span
+              style={{
+                fontSize: "12px",
+                color: "rgba(168,240,255,0.55)",
+                letterSpacing: "0.4px",
+              }}
+            >
+              {f}
+            </span>
+          </div>
+        ))}
       </div>
-    </section>
+
+      {/* Corner HUD marks */}
+      {[
+        {
+          top: 10,
+          left: 10,
+          borderTop: `1px solid ${m.color}`,
+          borderLeft: `1px solid ${m.color}`,
+        },
+        {
+          top: 10,
+          right: 10,
+          borderTop: `1px solid ${m.color}`,
+          borderRight: `1px solid ${m.color}`,
+        },
+        {
+          bottom: 10,
+          left: 10,
+          borderBottom: `1px solid ${m.color}`,
+          borderLeft: `1px solid ${m.color}`,
+        },
+        {
+          bottom: 10,
+          right: 10,
+          borderBottom: `1px solid ${m.color}`,
+          borderRight: `1px solid ${m.color}`,
+        },
+      ].map((s, j) => (
+        <div
+          key={j}
+          style={{
+            position: "absolute",
+            width: "12px",
+            height: "12px",
+            opacity: hov ? 0.75 : 0.2,
+            transition: "opacity .3s",
+            ...s,
+          }}
+        />
+      ))}
+    </div>
   );
 }
 
-/* ── Footer ─────────────────────────────────────────────────── */
+/* ── Footer ──────────────────────────────────────────────────── */
 function Footer() {
+  const cols = {
+    Product: [
+      "Features",
+      "How It Works",
+      "Wearable Tech",
+      "Safety AI",
+      "Pricing",
+    ],
+    Company: ["About Us", "Our Mission", "Press Kit", "Careers", "Blog"],
+    Support: [
+      "Help Center",
+      "Contact Us",
+      "Community",
+      "Privacy Policy",
+      "Terms",
+    ],
+  };
   return (
-    <footer style={{
-      padding: "40px 40px 24px",
-      borderTop: "1px solid rgba(255,45,107,0.12)",
-      display: "flex", justifyContent: "space-between", alignItems: "center",
-      flexWrap: "wrap", gap: "16px",
-    }}>
-      <div style={{ fontFamily: "'Orbitron', monospace", fontSize: "16px", fontWeight: 700, color: "#ff2d6b", letterSpacing: "2px" }}>
-        SHIELDHER
-      </div>
-      <div style={{ fontSize: "12px", letterSpacing: "1px", color: "rgba(240,192,216,0.35)", fontFamily: "'Rajdhani', sans-serif" }}>
-        POWERING RESILIENCE · PROTECTING WOMEN · © 2025 SHIELDHER
-      </div>
-      <div style={{ display: "flex", gap: "24px" }}>
-        {["Privacy", "Terms", "Contact"].map(l => (
-          <a key={l} href="#" style={{ fontSize: "12px", letterSpacing: "1.5px", color: "rgba(240,192,216,0.45)", textDecoration: "none", fontFamily: "'Rajdhani', sans-serif", textTransform: "uppercase", transition: "color .2s" }}
-          onMouseEnter={e => e.target.style.color = "#ff2d6b"}
-          onMouseLeave={e => e.target.style.color = "rgba(240,192,216,0.45)"}>{l}</a>
+    <footer
+      style={{
+        position: "relative",
+        zIndex: 1,
+        borderTop: "1px solid rgba(0,180,255,0.1)",
+        background: "rgba(3,8,18,0.72)",
+        backdropFilter: "blur(20px)",
+      }}
+    >
+      <div
+        style={{
+          maxWidth: "1200px",
+          margin: "0 auto",
+          padding: "64px 48px 48px",
+          display: "grid",
+          gridTemplateColumns: "1.5fr 1fr 1fr 1fr",
+          gap: "48px",
+        }}
+      >
+        <div>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+              marginBottom: "16px",
+            }}
+          >
+            <div
+              style={{
+                width: "32px",
+                height: "32px",
+                border: "1.5px solid rgba(0,207,255,0.55)",
+                borderRadius: "7px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                background: "rgba(0,207,255,0.07)",
+                boxShadow: "0 0 12px rgba(0,207,255,0.18)",
+              }}
+            >
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+                <path
+                  d="M10 2L17 5L17 10C17 14.5 13.5 17.5 10 19C6.5 17.5 3 14.5 3 10L3 5Z"
+                  fill="rgba(0,207,255,0.18)"
+                  stroke="#00cfff"
+                  strokeWidth="1.5"
+                />
+                <circle cx="10" cy="9" r="2.2" fill="#00cfff" />
+              </svg>
+            </div>
+            <span
+              style={{
+                fontFamily: "'Orbitron',monospace",
+                fontSize: "15px",
+                fontWeight: 700,
+                color: "#00cfff",
+                letterSpacing: "3px",
+              }}
+            >
+              SHIELDHER
+            </span>
+          </div>
+          <p
+            style={{
+              fontSize: "13px",
+              color: "rgba(168,240,255,0.42)",
+              lineHeight: 1.8,
+              marginBottom: "24px",
+              maxWidth: "260px",
+              letterSpacing: "0.3px",
+            }}
+          >
+            AI-powered personal safety platform protecting women with real-time
+            alerts, GPS tracking, and wearable technology.
+          </p>
+          <div
+            style={{
+              fontSize: "9px",
+              letterSpacing: "3px",
+              color: "rgba(0,207,255,0.38)",
+              fontFamily: "'Courier New',monospace",
+            }}
+          >
+            POWERING RESILIENCE
+          </div>
+        </div>
+        {Object.entries(cols).map(([col, items]) => (
+          <div key={col}>
+            <div
+              style={{
+                fontFamily: "'Courier New',monospace",
+                fontSize: "9px",
+                letterSpacing: "2.5px",
+                color: "rgba(0,207,255,0.5)",
+                marginBottom: "20px",
+                textTransform: "uppercase",
+              }}
+            >
+              {col}
+            </div>
+            <div
+              style={{ display: "flex", flexDirection: "column", gap: "12px" }}
+            >
+              {items.map((item) => (
+                <a
+                  key={item}
+                  href="#"
+                  style={{
+                    fontSize: "13px",
+                    color: "rgba(168,240,255,0.42)",
+                    textDecoration: "none",
+                    letterSpacing: "0.3px",
+                    transition: "color .2s",
+                  }}
+                  onMouseEnter={(e) => (e.target.style.color = "#7de8ff")}
+                  onMouseLeave={(e) =>
+                    (e.target.style.color = "rgba(168,240,255,0.42)")
+                  }
+                >
+                  {item}
+                </a>
+              ))}
+            </div>
+          </div>
         ))}
+      </div>
+      <div
+        style={{
+          borderTop: "1px solid rgba(0,180,255,0.08)",
+          padding: "20px 48px",
+          maxWidth: "1200px",
+          margin: "0 auto",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          flexWrap: "wrap",
+          gap: "12px",
+        }}
+      >
+        <div
+          style={{
+            fontSize: "10px",
+            color: "rgba(0,180,255,0.32)",
+            letterSpacing: "1px",
+            fontFamily: "'Courier New',monospace",
+          }}
+        >
+          © 2025 SHIELDHER · ALL RIGHTS RESERVED · AES-256 ENCRYPTED
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <div
+            style={{
+              width: "5px",
+              height: "5px",
+              borderRadius: "50%",
+              background: "#00cfff",
+              boxShadow: "0 0 7px #00cfff",
+              animation: "blink 2s ease-in-out infinite",
+            }}
+          />
+          <span
+            style={{
+              fontSize: "9px",
+              letterSpacing: "2px",
+              color: "rgba(0,207,255,0.38)",
+              fontFamily: "'Courier New',monospace",
+            }}
+          >
+            ALL SYSTEMS OPERATIONAL
+          </span>
+        </div>
       </div>
     </footer>
   );
 }
 
-/* ── Main Export ─────────────────────────────────────────────── */
+/* ── Export ──────────────────────────────────────────────────── */
 export default function HomePage() {
+   const navigate = useNavigate();
   return (
     <>
-      <style>{GLOBAL_CSS}</style>
-      <div style={{ position: "relative", minHeight: "100vh", background: "#0a0010" }}>
-        <PinkParticlesBG />
-        <Navbar onNav={() => {}} />
+      <style>{CSS}</style>
+      <div
+        style={{
+          position: "relative",
+          minHeight: "100vh",
+          background: "#060d1a",
+        }}
+      >
+        {/* <BG/> */}
+        <Navbar />
         <main style={{ position: "relative", zIndex: 1 }}>
-          <Hero />
-          <Features />
-          <CinematicDemo />
+        <Hero navigate={navigate} />
+          <About />
+          <ShieldHerFlipbook />
+          {/* <Magazine/> */}
           <Methods />
-          <CTA />
         </main>
         <Footer />
       </div>
