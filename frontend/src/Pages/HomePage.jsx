@@ -1369,7 +1369,6 @@ export default function HomePage() {
         <Hero navigate={navigate} />
           <About />
           <ShieldHerFlipbook />
-          {/* <Magazine/> */}
           <Methods />
         </main>
         <Gpstracker/>
