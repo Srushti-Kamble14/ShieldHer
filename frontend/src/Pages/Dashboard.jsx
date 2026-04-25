@@ -837,8 +837,8 @@ function ContactBadge({ c, i }) {
         </div>
         <div
           style={{
-            fontSize: "11px",
-            color: "rgba(0,180,255,0.45)",
+            fontSize: "13px",
+            color: "rgba(0, 179, 255, 0.86)",
             letterSpacing: "1px",
           }}
         >
@@ -1089,7 +1089,8 @@ const address = profile.address || {};
                   background: shieldActive
                     ? "linear-gradient(90deg,rgba(0,100,200,0.5),rgba(0,207,255,0.38))"
                     : "rgba(255,0,60,0.15)",
-                  border: `1px solid ${shieldActive ? "rgba(0,207,255,0.55)" : "rgba(255,0,60,0.5)"}`,
+                   
+                  border: `1px solid ${shieldActive ? "rgba(0, 208, 255, 0.28)" : "rgba(255,0,60,0.5)"}`,
                   borderRadius: "8px",
                   color: shieldActive ? "#7de8ff" : "#ff4488",
                   fontSize: "12px",
