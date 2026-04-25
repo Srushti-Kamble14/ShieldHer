@@ -8,10 +8,8 @@ export default function ShieldHerFlipbook() {
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
-        position: "relative",
       }}
     >
-      {/* Heading */}
       <h2
         style={{
           fontFamily: "'Orbitron', monospace",
@@ -26,15 +24,15 @@ export default function ShieldHerFlipbook() {
         INSTRUCTION MANUAL
       </h2>
 
-      {/* Flipbook container */}
       <div
         style={{
           width: "70%",
           height: "80vh",
+          position: "relative",
           overflow: "hidden",
-          position: "relative", // ✅ needed for overlays
         }}
       >
+        {/* Iframe */}
         <iframe
           src="https://heyzine.com/flip-book/3d12cf6d45.html"
           title="Flipbook"
@@ -42,6 +40,7 @@ export default function ShieldHerFlipbook() {
             border: "none",
             width: "100%",
             height: "100%",
+            zIndex: 1,
           }}
           allow="clipboard-write"
           allowFullScreen
@@ -51,48 +50,53 @@ export default function ShieldHerFlipbook() {
         <div
           style={{
             position: "absolute",
-            bottom: "-5%",
-            left: "15%",
-            transform: "translate(-50%, -50%)",
-            width: "220px",
-            height: "80px",
-            backgroundColor: "#050E1E",
-            borderRadius: "10px",
+            inset: 0,
             zIndex: 5,
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
+            pointerEvents: "none",
           }}
         >
-          <h1
+          {/* SHIELDHER BOX */}
+          {/* <div
             style={{
-              margin: 0,
-              fontSize: "28px",
-              fontWeight: "bold",
-              color: "#fff",
-              letterSpacing: "2px",
+              position: "absolute",
+              bottom: "5%",
+              left: "15%",
+              width: "220px",
+              height: "80px",
+              backgroundColor: "#050E1E",
+              borderRadius: "10px",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              boxShadow: "0 0 20px rgba(0,0,0,0.4)",
             }}
           >
-            SHIELDHER ◇
-          </h1>
+            <h1
+              style={{
+                margin: 0,
+                fontSize: "22px",
+                fontWeight: "bold",
+                color: "#fff",
+                letterSpacing: "2px",
+              }}
+            >
+              SHIELDHER ◇
+            </h1>
+          </div> */}
+
+          {/* RIGHT FLOAT BOX */}
+          <div
+            style={{
+              position: "absolute",
+              top: "17%",
+              right: "13%",
+              width: "100px",
+              height: "100px",
+              backgroundColor: "#050E1E",
+              borderRadius: "10px",
+            }}
+          />
         </div>
-
-        {/* 🔲 RIGHT BOX */}
-        <div
-          style={{
-            position: "absolute",
-            top: "6%",
-            right: "8%",
-            transform: "translate(50%, -50%)",
-            width: "100px",
-            height: "100px",
-            backgroundColor: "#050E1E",
-            borderRadius: "10px",
-            zIndex: 5,
-          }}
-        />
-
-       
       </div>
     </div>
   );
