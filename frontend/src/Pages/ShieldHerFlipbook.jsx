@@ -47,7 +47,7 @@ export default function ShieldHerFlipbook() {
           allowFullScreen
         />
 
-        {/* 🔥 SHIELDHER BOX (top-left) */}
+     
         <div
           style={{
             position: "absolute",
