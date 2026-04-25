@@ -1,25 +1,16 @@
-
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+
 /* ─── CSS ────────────────────────────────────────────────────── */
 const G = `
   @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@400;500;600;700&display=swap');
   *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
   body { background:#060d1a; color:#a8f0ff; font-family:'Rajdhani',sans-serif; min-height:100vh; overflow-x:hidden; }
- ::-webkit-scrollbar { width:6px; }
 
-::-webkit-scrollbar-track {
-  background: #0a0a0a;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #000;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #222;
-}
+  ::-webkit-scrollbar { width:6px; }
+  ::-webkit-scrollbar-track { background: #0a0a0a; }
+  ::-webkit-scrollbar-thumb { background: #000; border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: #222; }
 
   input, select, textarea {
     background: rgba(0,25,60,0.6);
@@ -59,6 +50,130 @@ const G = `
   @keyframes pulseRing{ 0%,100%{box-shadow:0 0 0 0 rgba(0,207,255,0.4);} 50%{box-shadow:0 0 0 12px rgba(0,207,255,0);} }
   @keyframes slideIn  { from{opacity:0;transform:translateX(-16px);} to{opacity:1;transform:translateX(0);} }
   @keyframes spin     { from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
+
+  /* ── Responsive Utilities ── */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .grid-2-contact {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .grid-addr {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  /* Steps connector line */
+  .step-line {
+    width: 80px;
+    height: 1px;
+    margin-top: 14px;
+    transition: all .3s;
+    flex-shrink: 0;
+  }
+  .step-label {
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-family: 'Courier New', monospace;
+    white-space: nowrap;
+    transition: color .3s;
+  }
+
+  /* Navbar title */
+  .nav-title {
+    font-family: 'Courier New', monospace;
+    font-size: 18px;
+    letter-spacing: 3px;
+    color: rgba(33, 175, 207, 0.92);
+  }
+
+  /* ── Mobile ── */
+  @media (max-width: 600px) {
+    .grid-2, .grid-2-contact, .grid-addr {
+      grid-template-columns: 1fr !important;
+    }
+
+    /* Steps */
+    .step-line { width: 28px !important; }
+    .step-label { font-size: 6.5px !important; letter-spacing: 0.3px !important; }
+    .step-circle { width: 24px !important; height: 24px !important; }
+    .step-num { font-size: 8px !important; }
+
+    /* Navbar */
+    .nav-title { font-size: 11px !important; letter-spacing: 1px !important; }
+    .nav-logo-text { font-size: 11px !important; letter-spacing: 1.5px !important; }
+    .nav-session-text { display: none !important; }
+
+    /* Layout */
+    .main-content { padding: 72px 10px 48px !important; }
+
+    /* Cards */
+    .card-body { padding: 12px 10px !important; gap: 12px !important; }
+    .contact-body { padding: 12px 10px !important; }
+
+    /* Card header */
+    .card-header { padding: 10px 12px !important; }
+    .card-icon { font-size: 14px !important; }
+    .card-title-text { font-size: 9px !important; letter-spacing: 1.5px !important; }
+
+    /* Inputs & selects */
+    input, select, textarea {
+      font-size: 13px !important;
+      padding: 9px 10px !important;
+    }
+
+    /* Field labels */
+    .field-label { font-size: 10px !important; letter-spacing: 1.5px !important; }
+    .field-hint { font-size: 10px !important; }
+
+    /* Page heading */
+    .page-heading { font-size: 1.1rem !important; letter-spacing: 2px !important; }
+
+    /* Contact card header */
+    .contact-header { padding: 10px 12px !important; }
+    .contact-avatar-circle { width: 26px !important; height: 26px !important; font-size: 10px !important; }
+    .contact-label { font-size: 8px !important; letter-spacing: 1px !important; }
+    .contact-sub-name { font-size: 11px !important; }
+
+    /* Priority buttons */
+    .priority-row { flex-wrap: wrap; gap: 6px !important; }
+
+    /* NavBtn */
+    .nav-btn-back { padding: 10px 14px !important; font-size: 10px !important; }
+    .nav-btn-next { padding: 12px 10px !important; font-size: 10px !important; letter-spacing: 1.5px !important; }
+
+    /* Range labels */
+    .range-labels span { font-size: 8px !important; }
+
+    /* Info banner */
+    .info-banner { padding: 10px 12px !important; font-size: 11px !important; }
+
+    /* Add contact button */
+    .add-contact-btn { padding: 10px !important; font-size: 9px !important; letter-spacing: 1px !important; }
+
+    /* Contacts counter */
+    .contacts-counter { font-size: 8px !important; }
+
+    /* Save section note */
+    .save-note { font-size: 8px !important; }
+
+    /* Save button */
+    .save-btn { font-size: 10px !important; letter-spacing: 1.5px !important; padding: 12px 10px !important; }
+  }
+
+  /* ── Tablet ── */
+  @media (min-width: 601px) and (max-width: 860px) {
+    .step-line { width: 50px !important; }
+    .step-label { font-size: 8px !important; }
+    .nav-title { font-size: 14px !important; letter-spacing: 2px !important; }
+    .main-content { padding: 88px 20px 60px !important; }
+  }
 `;
 
 /* ─── Animated Background ────────────────────────────────────── */
@@ -77,7 +192,6 @@ function BlueBG() {
       c.width = window.innerWidth;
       c.height = window.innerHeight;
       const count = Math.floor((c.width * c.height) / 2500);
-
       ptsRef.current = Array.from({ length: count }, () => ({
         x: Math.random() * c.width,
         y: Math.random() * c.height,
@@ -165,7 +279,7 @@ function BlueBG() {
 function Field({ label, required, hint, children }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "4px" }}>
         <label style={{ fontSize: "13px", letterSpacing: "2.5px", textTransform: "uppercase", color: "rgba(0, 208, 255, 0.87)", fontFamily: "'Courier New', monospace" }}>
           {label}{required && <span style={{ color: "#00cfff", marginLeft: 3 }}>*</span>}
         </label>
@@ -185,7 +299,7 @@ function Card({ icon, title, children, bgImage }) {
         <span style={{ fontSize: "17px" }}>{icon}</span>
         <span style={{ fontFamily: "'Courier New', monospace", fontSize: "11px", letterSpacing: "2.5px", color: "rgba(232, 235, 236, 0.92)", textTransform: "uppercase" }}>{title}</span>
       </div>
-      <div style={{ padding: "22px 20px", display: "flex", flexDirection: "column", gap: "16px", backgroundImage: bgImage || "none", backgroundSize: "cover", backgroundPosition: "center", color: "white" }}>
+      <div className="card-body" style={{ padding: "22px 20px", display: "flex", flexDirection: "column", gap: "16px", backgroundImage: bgImage || "none", backgroundSize: "cover", backgroundPosition: "center", color: "white" }}>
         {children}
       </div>
       {[{ bottom: 10, left: 10, borderBottom: "1px solid", borderLeft: "1px solid" }, { bottom: 10, right: 10, borderBottom: "1px solid", borderRight: "1px solid" }].map((s, i) => (
@@ -199,21 +313,21 @@ function Card({ icon, title, children, bgImage }) {
 function Steps({ current }) {
   const labels = ["Personal Info", "Emergency Contacts", "Address"];
   return (
-    <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "center", gap: 0, marginBottom: "36px" }}>
+    <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "center", gap: 0, marginBottom: "36px", overflowX: "auto", paddingBottom: "4px" }}>
       {labels.map((l, i) => (
-        <div key={i} style={{ display: "flex", alignItems: "flex-start" }}>
+        <div key={i} style={{ display: "flex", alignItems: "flex-start", flexShrink: 0 }}>
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "6px" }}>
-            <div style={{ width: "30px", height: "30px", borderRadius: "50%", border: `1.5px solid ${i <= current ? "#00cfff" : "rgba(0, 179, 255, 0.74)"}`, background: i < current ? "#00cfff" : i === current ? "rgba(0,207,255,0.12)" : "transparent", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: i <= current ? "0 0 14px rgba(0,207,255,0.35)" : "none", transition: "all .3s" }}>
+            <div style={{ width: "30px", height: "30px", borderRadius: "50%", border: `1.5px solid ${i <= current ? "#00cfff" : "rgba(0, 179, 255, 0.74)"}`, background: i < current ? "#00cfff" : i === current ? "rgba(0,207,255,0.12)" : "transparent", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: i <= current ? "0 0 14px rgba(0,207,255,0.35)" : "none", transition: "all .3s", flexShrink: 0 }}>
               {i < current ? (
                 <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5,10 11,3" stroke="#060d1a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
               ) : (
                 <span style={{ fontFamily: "'Courier New', monospace", fontSize: "10px", color: i === current ? "#00cfff" : "rgba(0, 179, 255, 0.6)", fontWeight: 700 }}>{i + 1}</span>
               )}
             </div>
-            <span style={{ fontSize: "9px", letterSpacing: "1px", textTransform: "uppercase", color: i <= current ? "rgba(0,207,255,0.7)" : "rgba(0, 179, 255, 0.63)", fontFamily: "'Courier New', monospace", whiteSpace: "nowrap", transition: "color .3s" }}>{l}</span>
+            <span className="step-label" style={{ color: i <= current ? "rgba(0,207,255,0.7)" : "rgba(0, 179, 255, 0.63)" }}>{l}</span>
           </div>
           {i < labels.length - 1 && (
-            <div style={{ width: "80px", height: "1px", marginTop: "14px", background: i < current ? "#00cfff" : "rgba(0,180,255,0.15)", boxShadow: i < current ? "0 0 6px rgba(0,207,255,0.4)" : "none", transition: "all .3s" }} />
+            <div className="step-line" style={{ background: i < current ? "#00cfff" : "rgba(0,180,255,0.15)", boxShadow: i < current ? "0 0 6px rgba(0,207,255,0.4)" : "none" }} />
           )}
         </div>
       ))}
@@ -224,15 +338,15 @@ function Steps({ current }) {
 /* ─── NavBtn ─────────────────────────────────────────────────── */
 function NavBtn({ onBack, onNext, nextLabel, nextDisabled }) {
   return (
-    <div style={{ display: "flex", gap: "12px", marginTop: "24px" }}>
+    <div style={{ display: "flex", gap: "12px", marginTop: "24px", flexWrap: "wrap" }}>
       {onBack && (
-        <button onClick={onBack} style={{ padding: "13px 26px", background: "transparent", border: "1px solid rgba(0,180,255,0.3)", borderRadius: "6px", color: "rgba(0,207,255,0.55)", fontSize: "12px", letterSpacing: "2px", fontFamily: "'Courier New', monospace", cursor: "pointer", transition: "all .2s", flexShrink: 0 }}
+        <button onClick={onBack} style={{ padding: "13px 20px", background: "transparent", border: "1px solid rgba(0,180,255,0.3)", borderRadius: "6px", color: "rgba(0,207,255,0.55)", fontSize: "12px", letterSpacing: "2px", fontFamily: "'Courier New', monospace", cursor: "pointer", transition: "all .2s", flexShrink: 0 }}
           onMouseEnter={(e) => { e.currentTarget.style.borderColor = "rgba(0,207,255,0.6)"; e.currentTarget.style.color = "#7de8ff"; }}
           onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(0,180,255,0.3)"; e.currentTarget.style.color = "rgba(0,207,255,0.55)"; }}>
           ← BACK
         </button>
       )}
-      <button onClick={onNext} disabled={nextDisabled} style={{ flex: 1, padding: "14px", background: nextDisabled ? "rgba(0,180,255,0.06)" : "linear-gradient(90deg,rgba(0,100,200,0.5),rgba(0,207,255,0.4))", border: `1px solid ${nextDisabled ? "rgba(0,180,255,0.15)" : "rgba(0,207,255,0.55)"}`, borderRadius: "6px", color: nextDisabled ? "rgba(128, 184, 208, 0.59)" : "#7de8ff", fontSize: "12px", letterSpacing: "2.5px", fontFamily: "'Courier New', monospace", fontWeight: 700, cursor: nextDisabled ? "not-allowed" : "pointer", boxShadow: nextDisabled ? "none" : "0 0 24px rgba(0,207,255,0.18)", transition: "all .25s" }}>
+      <button onClick={onNext} disabled={nextDisabled} style={{ flex: 1, minWidth: "160px", padding: "14px", background: nextDisabled ? "rgba(0,180,255,0.06)" : "linear-gradient(90deg,rgba(0,100,200,0.5),rgba(0,207,255,0.4))", border: `1px solid ${nextDisabled ? "rgba(0,180,255,0.15)" : "rgba(0,207,255,0.55)"}`, borderRadius: "6px", color: nextDisabled ? "rgba(128, 184, 208, 0.59)" : "#7de8ff", fontSize: "12px", letterSpacing: "2.5px", fontFamily: "'Courier New', monospace", fontWeight: 700, cursor: nextDisabled ? "not-allowed" : "pointer", boxShadow: nextDisabled ? "none" : "0 0 24px rgba(0,207,255,0.18)", transition: "all .25s" }}>
         {nextLabel || "NEXT →"}
       </button>
     </div>
@@ -247,48 +361,40 @@ function ContactCard({ idx, contact, onChange, onRemove, canRemove }) {
   return (
     <div style={{ background: "rgba(4,18,48,0.82)", border: `1px solid ${open ? "rgba(0,180,255,0.3)" : "rgba(0,180,255,0.12)"}`, borderRadius: "10px", overflow: "hidden", backdropFilter: "blur(16px)", animation: "slideIn .3s ease both", transition: "border-color .25s" }}>
       {/* Header */}
-      <div onClick={() => setOpen((o) => !o)} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "13px 18px", cursor: "pointer", borderBottom: open ? "1px solid rgba(0,180,255,0.1)" : "none", background: open ? "rgba(0,207,255,0.03)" : "transparent", userSelect: "none" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+      <div onClick={() => setOpen((o) => !o)} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "13px 14px", cursor: "pointer", borderBottom: open ? "1px solid rgba(0,180,255,0.1)" : "none", background: open ? "rgba(0,207,255,0.03)" : "transparent", userSelect: "none", gap: "8px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: 0 }}>
           <div style={{ width: "32px", height: "32px", borderRadius: "50%", border: `1.5px solid ${accent}`, background: "rgba(0,207,255,0.08)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Courier New', monospace", fontSize: "12px", color: accent, fontWeight: 700, flexShrink: 0, boxShadow: `0 0 10px rgba(0,207,255,0.2)` }}>
             {contact.name ? contact.name[0].toUpperCase() : idx + 1}
           </div>
-          <div>
-            <div style={{ fontFamily: "'Courier New', monospace", fontSize: "10px", letterSpacing: "2px", color: accent }}>
+          <div style={{ minWidth: 0 }}>
+            <div style={{ fontFamily: "'Courier New', monospace", fontSize: "10px", letterSpacing: "2px", color: accent, whiteSpace: "nowrap" }}>
               CONTACT {idx + 1}
               {idx < 3 && <span style={{ color: "rgba(0,207,255,0.35)", marginLeft: 6, fontSize: "9px" }}>REQUIRED</span>}
             </div>
-            {contact.name && <div style={{ fontSize: "13px", color: "rgba(168,240,255,0.65)", marginTop: "2px" }}>{contact.name}{contact.relation && ` · ${contact.relation}`}</div>}
+            {contact.name && <div style={{ fontSize: "13px", color: "rgba(168,240,255,0.65)", marginTop: "2px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{contact.name}{contact.relation && ` · ${contact.relation}`}</div>}
           </div>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
           {canRemove && (
-            <button onClick={(e) => { e.stopPropagation(); onRemove(); }} style={{ background: "rgba(0,100,200,0.1)", border: "1px solid rgba(0,150,220,0.3)", borderRadius: "5px", color: "rgba(0,207,255,0.6)", fontSize: "11px", padding: "3px 10px", cursor: "pointer", fontFamily: "'Courier New', monospace", letterSpacing: "1px", transition: "all .2s" }}
+            <button onClick={(e) => { e.stopPropagation(); onRemove(); }} style={{ background: "rgba(0,100,200,0.1)", border: "1px solid rgba(0,150,220,0.3)", borderRadius: "5px", color: "rgba(0,207,255,0.6)", fontSize: "11px", padding: "3px 8px", cursor: "pointer", fontFamily: "'Courier New', monospace", letterSpacing: "1px", transition: "all .2s", whiteSpace: "nowrap" }}
               onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(0,100,200,0.2)"; e.currentTarget.style.color = "#00cfff"; }}
               onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(0,100,200,0.1)"; e.currentTarget.style.color = "rgba(0,207,255,0.6)"; }}>
-              ✕ REMOVE
+              ✕
             </button>
           )}
-          <span style={{ color: "rgba(0,180,255,0.4)", fontSize: "14px", display: "inline-block", transition: "transform .2s", transform: open ? "rotate(180deg)" : "rotate(0)" }}>▾</span>
+          <span style={{ color: "rgba(0,180,255,0.4)", fontSize: "14px", display: "inline-block", transition: "transform .2s", transform: open ? "rotate(180deg)" : "rotate(0)", flexShrink: 0 }}>▾</span>
         </div>
       </div>
 
       {/* Body */}
       {open && (
-        <div style={{ padding: "18px", display: "flex", flexDirection: "column", gap: "14px", backgroundImage: `linear-gradient(rgba(45, 36, 36, 0.5), rgba(35, 35, 125, 0.5)), url("https://www.shutterstock.com/image-vector/contact-us-customer-support-hotline-600nw-2407847227.jpg")`, backgroundSize: "cover", backgroundPosition: "center" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+        <div className="contact-body" style={{ padding: "18px", display: "flex", flexDirection: "column", gap: "14px", backgroundImage: `linear-gradient(rgba(45, 36, 36, 0.5), rgba(35, 35, 125, 0.5)), url("https://www.shutterstock.com/image-vector/contact-us-customer-support-hotline-600nw-2407847227.jpg")`, backgroundSize: "cover", backgroundPosition: "center" }}>
+          <div className="grid-2-contact">
             <Field label="Full Name" required>
-              <input
-                type="text"
-                placeholder="Jane Doe"
-                value={contact.name}
-                onChange={(e) => onChange({ ...contact, name: e.target.value })}
-              />
+              <input type="text" placeholder="Jane Doe" value={contact.name} onChange={(e) => onChange({ ...contact, name: e.target.value })} />
             </Field>
             <Field label="Relation">
-              <select
-                value={contact.relation}
-                onChange={(e) => onChange({ ...contact, relation: e.target.value })}
-              >
+              <select value={contact.relation} onChange={(e) => onChange({ ...contact, relation: e.target.value })}>
                 <option value="">Select</option>
                 {["Mother", "Father", "Sister", "Brother", "Husband", "Partner", "Friend", "Colleague", "Neighbour", "Other"].map((r) => (
                   <option key={r} value={r}>{r}</option>
@@ -296,26 +402,16 @@ function ContactCard({ idx, contact, onChange, onRemove, canRemove }) {
               </select>
             </Field>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+          <div className="grid-2-contact">
             <Field label="Phone Number" required>
-              <input
-                type="tel"
-                placeholder="+91 98765 43210"
-                value={contact.phone}
-                onChange={(e) => onChange({ ...contact, phone: e.target.value })}
-              />
+              <input type="tel" placeholder="+91 98765 43210" value={contact.phone} onChange={(e) => onChange({ ...contact, phone: e.target.value })} />
             </Field>
             <Field label="Email">
-              <input
-                type="email"
-                placeholder="jane@email.com"
-                value={contact.email}
-                onChange={(e) => onChange({ ...contact, email: e.target.value })}
-              />
+              <input type="email" placeholder="jane@email.com" value={contact.email} onChange={(e) => onChange({ ...contact, email: e.target.value })} />
             </Field>
           </div>
           {/* Priority */}
-          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
             <span style={{ fontSize: "9px", letterSpacing: "2px", color: "rgba(0,207,255,0.4)", fontFamily: "'Courier New', monospace", textTransform: "uppercase" }}>Alert Priority</span>
             {[1, 2, 3].map((p) => (
               <button key={p} onClick={() => onChange({ ...contact, priority: p })} style={{ width: "28px", height: "22px", borderRadius: "4px", border: `1px solid ${(contact.priority || 1) >= p ? "rgba(0,207,255,0.6)" : "rgba(0,180,255,0.18)"}`, background: (contact.priority || 1) >= p ? "rgba(0,207,255,0.12)" : "transparent", color: (contact.priority || 1) >= p ? "#00cfff" : "rgba(0,180,255,0.25)", fontSize: "11px", cursor: "pointer", fontFamily: "'Courier New', monospace", transition: "all .15s" }}>{p}</button>
@@ -350,23 +446,19 @@ export default function PersonalDetailsPage() {
   const addContact = () => { if (contacts.length < 5) setContacts((c) => [...c, empty()]); };
   const removeContact = (i) => { if (contacts.length > 3) setContacts((c) => c.filter((_, idx) => idx !== i)); };
 
-  // ok1: only name + phone required to proceed to step 2; relation is optional
   const ok0 = personal.firstName && personal.age && personal.phone;
   const ok1 = contacts.slice(0, 3).every((c) => c.name && c.phone);
   const ok2 = address.line1 && address.city && address.pincode;
 
-  // Load existing profile
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         const token = localStorage.getItem("token");
         if (!token) { setIsProfileExists(false); return; }
-
         const res = await fetch("http://localhost:5000/api/profile", {
           method: "GET",
           headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         });
-
         if (res.ok) {
           const data = await res.json();
           setIsProfileExists(true);
@@ -381,13 +473,7 @@ export default function PersonalDetailsPage() {
           });
           setContacts(
             data.emergencyContacts?.length >= 3
-              ? data.emergencyContacts.map((c) => ({
-                  name: c.name || "",
-                  phone: c.phone || "",
-                  email: c.email || "",
-                  relation: c.relation || "",
-                  priority: c.priority || 1,
-                }))
+              ? data.emergencyContacts.map((c) => ({ name: c.name || "", phone: c.phone || "", email: c.email || "", relation: c.relation || "", priority: c.priority || 1 }))
               : [empty(), empty(), empty()]
           );
           setAddress({
@@ -414,8 +500,6 @@ export default function PersonalDetailsPage() {
     try {
       const token = localStorage.getItem("token");
       if (!token) return alert("No token found. Please login again.");
-
-      // ✅ FIX: relation is optional — only require name + 10-digit phone
       const emergencyContacts = (contacts || [])
         .map((c) => ({
           name: (c.name || "").trim(),
@@ -424,9 +508,7 @@ export default function PersonalDetailsPage() {
           email: (c.email || "").trim(),
           priority: c.priority || 1,
         }))
-        .filter((c) => c.name && c.phone.length === 10); // ← relation NOT required
-
-      console.log("CONTACTS TO SAVE:", emergencyContacts);
+        .filter((c) => c.name && c.phone.length === 10);
 
       if (emergencyContacts.length < 3 || emergencyContacts.length > 5) {
         alert(`3 to 5 valid emergency contacts required (found ${emergencyContacts.length}). Make sure each contact has a name and 10-digit phone number.`);
@@ -434,29 +516,16 @@ export default function PersonalDetailsPage() {
       }
 
       const profileData = { personal, contacts: emergencyContacts, address };
-
       const res = await fetch("http://localhost:5000/api/profile", {
         method: isProfileExists ? "PUT" : "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify(profileData),
       });
-
       const data = await res.json();
-
-      if (!res.ok) {
-        console.error("Backend Error:", data);
-        alert(data.msg || "Failed to save profile");
-        return;
-      }
-
+      if (!res.ok) { console.error("Backend Error:", data); alert(data.msg || "Failed to save profile"); return; }
       setSaved(true);
-setIsProfileExists(true);
-
-// 🔥 redirect after success
-setTimeout(() => {
-  navigate("/dashboard");
-}, 1000);
-      console.log("Saved successfully:", data);
+      setIsProfileExists(true);
+      setTimeout(() => { navigate("/dashboard"); }, 1000);
     } catch (err) {
       console.error(err);
       alert("Server error");
@@ -472,27 +541,29 @@ setTimeout(() => {
         <BlueBG />
 
         {/* Navbar */}
-        <nav style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 1000, height: "64px", padding: "0 32px", display: "flex", alignItems: "center", justifyContent: "space-between", background: "rgba(6,13,26,0.9)", backdropFilter: "blur(20px)", borderBottom: "1px solid rgba(0,180,255,0.15)" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <div style={{ width: "32px", height: "32px", border: "1.5px solid rgba(0,207,255,0.6)", borderRadius: "7px", display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,207,255,0.07)", boxShadow: "0 0 12px rgba(0,207,255,0.2)" }}>
+        <nav style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 1000, height: "64px", padding: "0 16px", display: "flex", alignItems: "center", justifyContent: "space-between", background: "rgba(6,13,26,0.9)", backdropFilter: "blur(20px)", borderBottom: "1px solid rgba(0,180,255,0.15)", gap: "8px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
+            <div style={{ width: "32px", height: "32px", border: "1.5px solid rgba(0,207,255,0.6)", borderRadius: "7px", display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,207,255,0.07)", boxShadow: "0 0 12px rgba(0,207,255,0.2)", flexShrink: 0 }}>
               <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
                 <path d="M10 2L17 5L17 10C17 14.5 13.5 17.5 10 19C6.5 17.5 3 14.5 3 10L3 5Z" fill="rgba(0,207,255,0.2)" stroke="#00cfff" strokeWidth="1.5" />
                 <circle cx="10" cy="9" r="2.2" fill="#00cfff" />
               </svg>
             </div>
-            <span style={{ fontFamily: "'Courier New', monospace", fontSize: "15px", fontWeight: 700, color: "#00cfff", letterSpacing: "3px" }}>SHIELDHER</span>
+            <span className="nav-logo-text" style={{ fontFamily: "'Courier New', monospace", fontSize: "15px", fontWeight: 700, color: "#00cfff", letterSpacing: "3px" }}>SHIELDHER</span>
           </div>
-          <span style={{ fontFamily: "'Courier New', monospace", fontSize: "18px", letterSpacing: "3px", color: "rgba(33, 175, 207, 0.92)" }}>PROFILE SETUP</span>
-          <div style={{ display: "flex", alignItems: "center", gap: "7px" }}>
-            <div style={{ width: "5px", height: "5px", borderRadius: "50%", background: "#00cfff", boxShadow: "0 0 7px #00cfff", animation: "blink 2s ease-in-out infinite" }} />
-            <span style={{ fontSize: "10px", letterSpacing: "2px", color: "rgba(162, 219, 232, 0.92)", fontFamily: "'Courier New', monospace" }}>SECURE SESSION</span>
+
+          <span className="nav-title">PROFILE SETUP</span>
+
+          <div style={{ display: "flex", alignItems: "center", gap: "6px", flexShrink: 0 }}>
+            <div style={{ width: "5px", height: "5px", borderRadius: "50%", background: "#00cfff", boxShadow: "0 0 7px #00cfff", animation: "blink 2s ease-in-out infinite", flexShrink: 0 }} />
+            <span className="nav-session-text" style={{ fontSize: "10px", letterSpacing: "2px", color: "rgba(162, 219, 232, 0.92)", fontFamily: "'Courier New', monospace" }}>SECURE SESSION</span>
           </div>
         </nav>
 
         {/* Content */}
-        <main style={{ position: "relative", zIndex: 1, maxWidth: "720px", margin: "0 auto", padding: "96px 20px 60px" }}>
+        <main className="main-content" style={{ position: "relative", zIndex: 1, maxWidth: "720px", margin: "0 auto", padding: "96px 20px 60px" }}>
           <div style={{ textAlign: "center", marginBottom: "32px", animation: "fadeUp .55s ease both" }}>
-            <h1 style={{ fontFamily: "'Courier New', monospace", fontSize: "clamp(1.5rem,3.5vw,2.2rem)", fontWeight: 700, letterSpacing: "4px", color: "#7de8ff", textShadow: "0 0 30px rgba(0,207,255,0.4)", animation: "glow 4s ease-in-out infinite", marginBottom: "8px" }}>PERSONAL DETAILS</h1>
+            <h1 style={{ fontFamily: "'Courier New', monospace", fontSize: "clamp(1.2rem,4vw,2.2rem)", fontWeight: 700, letterSpacing: "4px", color: "#7de8ff", textShadow: "0 0 30px rgba(0,207,255,0.4)", animation: "glow 4s ease-in-out infinite", marginBottom: "8px" }}>PERSONAL DETAILS</h1>
             <div style={{ height: "1px", marginTop: "18px", background: "linear-gradient(90deg,transparent,rgba(0,207,255,0.3),transparent)" }} />
           </div>
 
@@ -502,7 +573,7 @@ setTimeout(() => {
           {step === 0 && (
             <div style={{ display: "flex", flexDirection: "column", gap: "18px", animation: "fadeUp .4s ease both" }}>
               <Card icon="📍" title="Personal Information" bgImage={`linear-gradient(rgba(15, 41, 90, 0.5), rgba(255,255,255,0.2)), url("https://static.vecteezy.com/system/resources/thumbnails/030/337/740/original/loop-animation-of-glossy-shield-with-dark-background-3d-rendering-free-video.jpg")`}>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
+                <div className="grid-2">
                   <Field label="First Name" required>
                     <input type="text" placeholder="Priya" value={personal.firstName} onChange={(e) => setPersonal((p) => ({ ...p, firstName: e.target.value }))} />
                   </Field>
@@ -536,7 +607,7 @@ setTimeout(() => {
           {/* STEP 1: Emergency Contacts */}
           {step === 1 && (
             <div style={{ display: "flex", flexDirection: "column", gap: "14px", animation: "fadeUp .4s ease both" }}>
-              <div style={{ background: "rgba(0,207,255,0.05)", border: "1px solid rgba(0,180,255,0.2)", borderRadius: "8px", padding: "13px 16px", display: "flex", gap: "12px", alignItems: "flex-start" }}>
+              <div style={{ background: "rgba(0,207,255,0.05)", border: "1px solid rgba(0,180,255,0.2)", borderRadius: "8px", padding: "13px 14px", display: "flex", gap: "12px", alignItems: "flex-start" }}>
                 <span style={{ fontSize: "18px", flexShrink: 0 }}>🛡</span>
                 <p style={{ fontSize: "13px", color: "rgba(168,240,255,0.55)", lineHeight: 1.65, fontFamily: "'Courier New', monospace" }}>
                   Add <strong style={{ color: "#7de8ff" }}>minimum 3</strong>, up to <strong style={{ color: "#7de8ff" }}>5 contacts</strong>. They get an instant call + SMS with your live GPS when ShieldHer activates.
@@ -575,7 +646,7 @@ setTimeout(() => {
                 <Field label="Address Line 2">
                   <input type="text" placeholder="Landmark, Area" value={address.line2} onChange={(e) => setAddress((a) => ({ ...a, line2: e.target.value }))} />
                 </Field>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+                <div className="grid-addr">
                   <Field label="City" required>
                     <input type="text" placeholder="Mumbai" value={address.city} onChange={(e) => setAddress((a) => ({ ...a, city: e.target.value }))} />
                   </Field>
@@ -612,13 +683,13 @@ setTimeout(() => {
                     <span style={{ color: "#00c864", fontFamily: "'Courier New', monospace", fontSize: "10px", letterSpacing: "2px" }}>PROFILE SAVED SECURELY</span>
                   </div>
                 )}
-                <div style={{ display: "flex", gap: "12px" }}>
-                  <button onClick={() => setStep(1)} style={{ padding: "13px 24px", flexShrink: 0, background: "transparent", border: "1px solid rgba(0,180,255,0.3)", borderRadius: "6px", color: "rgba(0,207,255,0.55)", fontSize: "11px", letterSpacing: "2px", fontFamily: "'Courier New', monospace", cursor: "pointer", transition: "all .2s" }}
+                <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+                  <button onClick={() => setStep(1)} style={{ padding: "13px 20px", flexShrink: 0, background: "transparent", border: "1px solid rgba(0,180,255,0.3)", borderRadius: "6px", color: "rgba(0,207,255,0.55)", fontSize: "11px", letterSpacing: "2px", fontFamily: "'Courier New', monospace", cursor: "pointer", transition: "all .2s" }}
                     onMouseEnter={(e) => { e.currentTarget.style.borderColor = "rgba(0,207,255,0.6)"; e.currentTarget.style.color = "#7de8ff"; }}
                     onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(0,180,255,0.3)"; e.currentTarget.style.color = "rgba(0,207,255,0.55)"; }}>
                     ← BACK
                   </button>
-                  <button onClick={save} disabled={!ok2} style={{ flex: 1, padding: "15px", background: ok2 ? "linear-gradient(90deg,rgba(0,100,200,0.55),rgba(0,207,255,0.45))" : "rgba(0,180,255,0.06)", border: `1px solid ${ok2 ? "rgba(0,207,255,0.6)" : "rgba(0,180,255,0.15)"}`, borderRadius: "6px", color: ok2 ? "#7de8ff" : "rgba(0,180,255,0.3)", fontSize: "12px", letterSpacing: "2.5px", fontFamily: "'Courier New', monospace", fontWeight: 700, cursor: ok2 ? "pointer" : "not-allowed", boxShadow: ok2 ? "0 0 28px rgba(0,207,255,0.2)" : "none", animation: ok2 ? "pulseRing 2.5s ease-in-out infinite" : "none", transition: "all .3s" }}>
+                  <button onClick={save} disabled={!ok2} style={{ flex: 1, minWidth: "180px", padding: "15px", background: ok2 ? "linear-gradient(90deg,rgba(0,100,200,0.55),rgba(0,207,255,0.45))" : "rgba(0,180,255,0.06)", border: `1px solid ${ok2 ? "rgba(0,207,255,0.6)" : "rgba(0,180,255,0.15)"}`, borderRadius: "6px", color: ok2 ? "#7de8ff" : "rgba(0,180,255,0.3)", fontSize: "12px", letterSpacing: "2.5px", fontFamily: "'Courier New', monospace", fontWeight: 700, cursor: ok2 ? "pointer" : "not-allowed", boxShadow: ok2 ? "0 0 28px rgba(0,207,255,0.2)" : "none", animation: ok2 ? "pulseRing 2.5s ease-in-out infinite" : "none", transition: "all .3s" }}>
                     🛡 SAVE & ACTIVATE SHIELD
                   </button>
                 </div>
