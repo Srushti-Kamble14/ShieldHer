@@ -965,6 +965,12 @@ function ShieldStatus() {
 
 /* ─── Main Dashboard ─────────────────────────────────────────── */
 export default function Dashboard() {
+    const [customTriggers, setCustomTriggers] = useState(["", ""]);
+    const [inputWord, setInputWord] = useState("");
+    const allTriggers = ["help", "danger", "emergency", ...customTriggers];
+   
+    
+    
 
     const [profile, setProfile] = useState(null);  // ✅ ADD THIS
      const [shieldActive, setShieldActive] = useState(true);
@@ -1002,8 +1008,24 @@ setProfile(data);
 const contacts = profile.emergencyContacts || [];
 const address = profile.address || {};
   const fullName = `${personal.firstName} ${personal.lastName}`.trim();
- 
 
+  const addTrigger = () => {
+  const word = inputWord.trim().toLowerCase();
+
+    console.log("ADDING WORD:", word); // 🔍 DEBUG
+
+  if (!word) return;
+  if (customTriggers.includes(word)) return;
+  if (customTriggers.length >= 2) return;
+
+  setCustomTriggers([...customTriggers, word]);
+  setInputWord("");
+};
+
+const removeTrigger = (word) => {
+  setCustomTriggers(customTriggers.filter((w) => w !== word));
+};
+ 
   return (
     <>
       <style>{CSS}</style>
@@ -1517,6 +1539,120 @@ const address = profile.address || {};
               </div>
             </SCard>
           </div>
+
+
+          {/* ── Trigger Words Section ── */}
+<div style={{ marginTop: "20px" }}>
+  <SCard icon="🎤" title="Trigger Words" delay={320}>
+    
+    {/* Fixed words */}
+    <div style={{ marginBottom: "16px" }}>
+      <div style={{
+        fontSize: "10px",
+        letterSpacing: "2px",
+        color: "rgba(0,207,255,0.5)",
+        fontFamily: "'Courier New',monospace",
+        marginBottom: "8px"
+      }}>
+        SYSTEM TRIGGERS (FIXED)
+      </div>
+
+      {["HELP", "DANGER", "EMERGENCY"].map((word, i) => (
+        <div key={i}
+          style={{
+            padding: "10px 14px",
+            background: "rgba(0,207,255,0.05)",
+            border: "1px solid rgba(0,180,255,0.2)",
+            borderRadius: "6px",
+            marginBottom: "6px",
+            color: "#00cfff",
+            fontFamily: "'Orbitron',monospace",
+            letterSpacing: "2px"
+          }}
+        >
+          {word}
+        </div>
+      ))}
+    </div>
+
+    {/* Custom words */}
+    <div>
+      <div style={{
+        fontSize: "10px",
+        letterSpacing: "2px",
+        color: "rgba(0,207,255,0.5)",
+        fontFamily: "'Courier New',monospace",
+        marginBottom: "8px"
+      }}>
+        CUSTOM TRIGGERS (MAX 2)
+      </div>
+
+      {/* Add input + button */}
+<div style={{ display: "flex", gap: "10px", marginBottom: "12px" }}>
+  <input
+    value={inputWord}
+    onChange={(e) => setInputWord(e.target.value)}
+    placeholder="Enter trigger word"
+    style={{
+      flex: 1,
+      padding: "10px",
+      background: "rgba(0,20,55,0.7)",
+      border: "1px solid rgba(0,180,255,0.2)",
+      borderRadius: "6px",
+      color: "#a8f0ff",
+      outline: "none"
+    }}
+  />
+
+  <button
+    onClick={addTrigger}
+    style={{
+      padding: "10px 16px",
+      background: "rgba(0,207,255,0.15)",
+      border: "1px solid rgba(0,207,255,0.4)",
+      borderRadius: "6px",
+      color: "#00cfff",
+      fontFamily: "'Orbitron',monospace",
+      cursor: "pointer"
+    }}
+  >
+    ADD
+  </button>
+</div>
+
+{/* Show added words */}
+<div>
+  {customTriggers.length === 0 && (
+    <p style={{ fontSize: "12px", color: "rgba(168,240,255,0.4)" }}>
+      No custom triggers added
+    </p>
+  )}
+
+  {customTriggers.map((word, i) => (
+    <span
+      key={i}
+      onClick={() => removeTrigger(word)}
+      style={{
+        display: "inline-block",
+        padding: "8px 14px",
+        marginRight: "8px",
+        marginBottom: "6px",
+        background: "rgba(0,207,255,0.1)",
+        border: "1px solid rgba(0,207,255,0.4)",
+        borderRadius: "20px",
+        color: "#7de8ff",
+        cursor: "pointer",
+        fontSize: "12px"
+      }}
+    >
+      {word} ✕
+    </span>
+  ))}
+</div>
+    </div>
+
+  </SCard>
+</div>
         </main>
       </div>
     </>
