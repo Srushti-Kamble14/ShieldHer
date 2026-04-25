@@ -305,7 +305,34 @@ function Hero({ navigate }) {
               (e.currentTarget.style.transform = "scale(1.15)")
             }
             onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
-            onClick={() => navigate("/details")}
+            onClick={async () => {
+  try {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      navigate("/details"); // not logged in → create profile
+      return;
+    }
+
+    const res = await fetch("http://localhost:5000/api/profile", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (res.ok) {
+      // ✅ profile exists
+      navigate("/dashboard");
+    } else {
+      // ❌ profile not created
+      navigate("/details");
+    }
+  } catch (err) {
+    console.error(err);
+    navigate("/details");
+  }
+}}
           >
             ACTIVATE SHIELD
           </button>
