@@ -964,11 +964,45 @@ function ShieldStatus() {
 }
 
 /* ─── Main Dashboard ─────────────────────────────────────────── */
-export default function Dashboard({ profile = MOCK_PROFILE }) {
-  const { personal, contacts, address } = profile;
-  const fullName = `${personal.firstName} ${personal.lastName}`.trim();
-  const [shieldActive, setShieldActive] = useState(true);
+export default function Dashboard() {
+
+    const [profile, setProfile] = useState(null);  // ✅ ADD THIS
+     const [shieldActive, setShieldActive] = useState(true);
   const [uptime] = useState("04:27:13");
+
+  useEffect(() => {                              // ✅ ADD THIS
+    const fetchProfile = async () => {
+      try {
+        const token = localStorage.getItem("token");
+
+        const res = await fetch("http://localhost:5000/api/profile", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!res.ok) {
+  console.error("Failed to fetch profile");
+  return;
+}
+
+const data = await res.json();
+setProfile(data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchProfile();
+  }, []);
+  if (!profile) {
+  return <h2 style={{ color: "#fff" }}>Loading...</h2>;
+}
+  const personal = profile;
+const contacts = profile.emergencyContacts || [];
+const address = profile.address || {};
+  const fullName = `${personal.firstName} ${personal.lastName}`.trim();
+ 
 
   return (
     <>
