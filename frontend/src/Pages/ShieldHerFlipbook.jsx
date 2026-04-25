@@ -1,5 +1,6 @@
 export default function ShieldHerFlipbook() {
   return (
+    <section id="instruction-manual"> 
     <div
       style={{
         backgroundColor: "#040d1c",
@@ -99,5 +100,7 @@ export default function ShieldHerFlipbook() {
         </div>
       </div>
     </div>
+
+     </section>  
   );
 }

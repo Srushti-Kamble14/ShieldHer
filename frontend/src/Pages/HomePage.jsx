@@ -34,7 +34,7 @@ const CSS = `
 /* ── BG Canvas ───────────────────────────────────────────────── */
 
 /* ── Navbar ──────────────────────────────────────────────────── */
-function Navbar() {
+function Navbar({navigate} ) {
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 40);
@@ -113,28 +113,57 @@ function Navbar() {
         </span>
       </div>
       <div style={{ display: "flex", gap: "34px", alignItems: "center" }}>
-        {links.map((l) => (
-          <a
-            key={l}
-            href={`#${l.toLowerCase().replace(/ /g, "-")}`}
-            style={{
-              color: "rgba(168,240,255,0.58)",
-              fontSize: "12px",
-              letterSpacing: "1.5px",
-              textDecoration: "none",
-              fontFamily: "'Rajdhani',sans-serif",
-              fontWeight: 600,
-              textTransform: "uppercase",
-              transition: "color .2s",
-            }}
-            onMouseEnter={(e) => (e.target.style.color = "#00cfff")}
-            onMouseLeave={(e) =>
-              (e.target.style.color = "rgba(168,240,255,0.58)")
-            }
-          >
-            {l}
-          </a>
-        ))}
+       {links.map((l) => (
+  <a
+    key={l}
+    href="#"
+    onClick={async (e) => {
+      e.preventDefault();
+
+      if (l === "Profile") {
+        try {
+          const token = localStorage.getItem("token");
+
+          if (!token) {
+            navigate("/details");
+            return;
+          }
+
+          const res = await fetch("http://localhost:5000/api/profile", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          if (res.ok) {
+            navigate("/dashboard"); // ✅ profile exists
+          } else {
+            navigate("/details");   // ❌ not exists
+          }
+        } catch (err) {
+          console.error(err);
+          navigate("/details");
+        }
+      } else {
+        // normal scroll for other links
+        const sectionId = l.toLowerCase().replace(/ /g, "-");
+        document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth" });
+      }
+    }}
+    style={{
+      color: "rgba(168,240,255,0.58)",
+      fontSize: "12px",
+      letterSpacing: "1.5px",
+      textDecoration: "none",
+      fontFamily: "'Rajdhani',sans-serif",
+      fontWeight: 600,
+      textTransform: "uppercase",
+      transition: "color .2s",
+    }}
+  >
+    {l}
+  </a>
+))}
       </div>
     </nav>
   );
@@ -1396,7 +1425,7 @@ export default function HomePage() {
         }}
       >
         {/* <BG/> */}
-        <Navbar />
+       <Navbar navigate={navigate} />
         <main style={{ position: "relative", zIndex: 1 }}>
           <Hero navigate={navigate} />
 
