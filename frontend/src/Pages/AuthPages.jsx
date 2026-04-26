@@ -5,7 +5,7 @@ import { loginUser } from "../api/serverApi";
 import { registerUser } from "../api/serverApi";
 import sign from "../assets/sign.png";
 import log from "../assets/log.webp";
-import { BASE_URL } from "./config";
+import { BASE_URL } from "../api/config";
 
 // ── Animated Background Canvas ────────────────────────────────
 function AnimatedBackground({ mode }) {
