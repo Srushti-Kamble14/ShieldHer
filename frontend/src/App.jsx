@@ -14,7 +14,7 @@ function App() {
       <Routes>
         <Route path="/" element={<ShieldHerLoader />} />
 
-        <Route path="/login" element={<AuthPages />} />
+        <Route path="/auth" element={<AuthPages />} />
 
         <Route path="/home" element={<HomePage />} />
 
