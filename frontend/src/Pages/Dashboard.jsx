@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import bg from "../assets/bg.jpg";
+import { BASE_URL } from "../api/config";
 
 /* ─── Mock profile data (replace with real state/context/API) ── */
 const MOCK_PROFILE = {
@@ -982,7 +983,7 @@ export default function Dashboard() {
       try {
         const token = localStorage.getItem("token");
 
-        const res = await fetch("http://localhost:5000/api/profile", {
+        const res = await fetch(`${BASE_URL}/profile`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

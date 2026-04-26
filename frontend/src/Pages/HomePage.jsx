@@ -7,6 +7,7 @@ import home from "../assets/home.jpg";
 import method1 from "../assets/method1.jpg";
 import method2 from "../assets/method2.jpg";
 import method3 from "../assets/method3.jpg";
+import { BASE_URL } from "../api/config";
 
 const CSS = `
   @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@400;500;600;700&display=swap');
@@ -370,7 +371,7 @@ function Hero({ navigate }) {
                   return;
                 }
 
-                const res = await fetch("http://localhost:5000/api/profile", {
+                const res = await fetch( `${BASE_URL}/profile`, {
                   method: "GET",
                   headers: {
                     Authorization: `Bearer ${token}`,

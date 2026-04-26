@@ -5,6 +5,7 @@ import addressbg from "../assets/address.jpg";
 import address2 from "../assets/address2.jpeg";
 import contact1 from "../assets/contact1.webp";
 import home from "../assets/home.jpg";
+import { BASE_URL } from "../api/config";
 /* ─── CSS ────────────────────────────────────────────────────── */
 const G = `
   @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@400;500;600;700&display=swap');
@@ -439,7 +440,7 @@ export default function PersonalDetailsPage() {
 
       const profileData = { personal, contacts: emergencyContacts, address };
 
-      const res = await fetch("http://localhost:5000/api/profile", {
+      const res = await fetch(`${BASE_URL}/profile`, {
         method: isProfileExists ? "PUT" : "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify(profileData),
