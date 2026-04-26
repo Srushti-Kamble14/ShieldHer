@@ -367,7 +367,7 @@ export default function PersonalDetailsPage() {
         const token = localStorage.getItem("token");
         if (!token) { setIsProfileExists(false); return; }
 
-        const res = await fetch("http://localhost:5000/api/profile", {
+        const res = await fetch(`${BASE_URL}/profile`, {
           method: "GET",
           headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         });
