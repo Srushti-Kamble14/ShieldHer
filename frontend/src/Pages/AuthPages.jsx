@@ -841,110 +841,111 @@ function SignupPage({ onSwitch }) {
       </div>
     </div>
   );
+}
 
-  // ── Main Export ───────────────────────────────────────────────
-  export default function AuthPages() {
-    const [page, setPage] = useState("login");
+// ── Main Export ───────────────────────────────────────────────
+export default function AuthPages() {
+  const [page, setPage] = useState("login");
 
-    return (
-      <div
-        style={{
-          minHeight: "100vh",
-          width: "100%",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: "24px 16px",
-          boxSizing: "border-box",
-          fontFamily: "'Courier New', monospace",
-          position: "relative",
-          overflow: "hidden",
-        }}
-      >
-        <AnimatedBackground mode={page} />
+  return (
+    <div
+      style={{
+        minHeight: "100vh",
+        width: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "24px 16px",
+        boxSizing: "border-box",
+        fontFamily: "'Courier New', monospace",
+        position: "relative",
+        overflow: "hidden",
+      }}
+    >
+      <AnimatedBackground mode={page} />
 
-        {[
-          {
-            top: 16,
-            left: 16,
-            borderTop: "1px solid",
-            borderLeft: "1px solid",
-          },
-          {
-            top: 16,
-            right: 16,
-            borderTop: "1px solid",
-            borderRight: "1px solid",
-          },
-          {
-            bottom: 16,
-            left: 16,
-            borderBottom: "1px solid",
-            borderLeft: "1px solid",
-          },
-          {
-            bottom: 16,
-            right: 16,
-            borderBottom: "1px solid",
-            borderRight: "1px solid",
-          },
-        ].map((s, i) => (
-          <div
-            key={i}
-            style={{
-              position: "fixed",
-              width: "24px",
-              height: "24px",
-              borderColor: "rgba(0,180,255,0.22)",
-              ...s,
-              zIndex: 20,
-              pointerEvents: "none",
-            }}
-          />
-        ))}
-
+      {[
+        {
+          top: 16,
+          left: 16,
+          borderTop: "1px solid",
+          borderLeft: "1px solid",
+        },
+        {
+          top: 16,
+          right: 16,
+          borderTop: "1px solid",
+          borderRight: "1px solid",
+        },
+        {
+          bottom: 16,
+          left: 16,
+          borderBottom: "1px solid",
+          borderLeft: "1px solid",
+        },
+        {
+          bottom: 16,
+          right: 16,
+          borderBottom: "1px solid",
+          borderRight: "1px solid",
+        },
+      ].map((s, i) => (
         <div
+          key={i}
           style={{
             position: "fixed",
-            top: "20px",
-            left: "50%",
-            transform: "translateX(-50%)",
+            width: "24px",
+            height: "24px",
+            borderColor: "rgba(0,180,255,0.22)",
+            ...s,
             zIndex: 20,
             pointerEvents: "none",
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
           }}
-        >
-          <span
-            style={{
-              display: "inline-block",
-              width: "6px",
-              height: "6px",
-              borderRadius: "50%",
-              background: "#00cfff",
-              boxShadow: "0 0 8px #00cfff",
-              animation: "pulseDot 1.4s ease-in-out infinite",
-            }}
-          />
-        </div>
+        />
+      ))}
 
-        <div
+      <div
+        style={{
+          position: "fixed",
+          top: "20px",
+          left: "50%",
+          transform: "translateX(-50%)",
+          zIndex: 20,
+          pointerEvents: "none",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+        }}
+      >
+        <span
           style={{
-            position: "relative",
-            zIndex: 10,
-            width: "100%",
-            maxWidth: "420px",
+            display: "inline-block",
+            width: "6px",
+            height: "6px",
+            borderRadius: "50%",
+            background: "#00cfff",
+            boxShadow: "0 0 8px #00cfff",
+            animation: "pulseDot 1.4s ease-in-out infinite",
           }}
-        >
-          {page === "login" ? (
-            <LoginPage onSwitch={() => setPage("signup")} />
-          ) : (
-            <SignupPage onSwitch={() => setPage("login")} />
-          )}
-        </div>
+        />
+      </div>
 
-        <style>{`
+      <div
+        style={{
+          position: "relative",
+          zIndex: 10,
+          width: "100%",
+          maxWidth: "420px",
+        }}
+      >
+        {page === "login" ? (
+          <LoginPage onSwitch={() => setPage("signup")} />
+        ) : (
+          <SignupPage onSwitch={() => setPage("login")} />
+        )}
+      </div>
+
+      <style>{`
         @keyframes pulseDot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.3;transform:scale(0.5)} }
         @keyframes slideUp { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:translateY(0)} }
         *{box-sizing:border-box}
@@ -952,7 +953,6 @@ function SignupPage({ onSwitch }) {
         input::placeholder{color:rgba(0,150,200,0.3)}
         input:-webkit-autofill{-webkit-box-shadow:0 0 0 100px rgba(0,25,65,0.9) inset !important;-webkit-text-fill-color:#a8f0ff !important}
       `}</style>
-      </div>
-    );
-  }
+    </div>
+  );
 }
