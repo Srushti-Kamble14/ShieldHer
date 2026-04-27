@@ -471,7 +471,7 @@ export default function PersonalDetailsPage() {
             bloodGroup: data.bloodGroup || "",
             medicalNotes: data.medicalNote || "",
           });
-          setContacts(
+          setContacts( 
             data.emergencyContacts?.length >= 3
               ? data.emergencyContacts.map((c) => ({ name: c.name || "", phone: c.phone || "", email: c.email || "", relation: c.relation || "", priority: c.priority || 1 }))
               : [empty(), empty(), empty()]
