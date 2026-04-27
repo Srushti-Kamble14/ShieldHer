@@ -1,5 +1,5 @@
 import client from "../config/twilio.js";
-import Profile from "../models/Profile.js";
+import Profile from "../models/profile.js";
 
 // const formatNumber = (num) => {
 //     if (!num) return null;
