@@ -139,22 +139,6 @@ TWILIO_PHONE_NUMBER=your_twilio_phone_number
 
 MONGO_URI=your_mongodb_connection_string
 PORT=5000
-
-##OUTPUT
-<img src="./images/Demo_call.jpeg" width="500"/>
-
-<img src="./images/Demo_msg.jpeg" width="500"/>
-
-
-## Hardware Setup
-
-- Connect ESP32 with GPS module (UART pins)
-- Connect GSM module for SMS/calling
-- Power supply via battery pack
-- Upload firmware using Arduino IDE
-
-<img src="./images/hardware.jpeg" width="500"/>
-
 ```
 
 ## Future Improvements
