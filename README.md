@@ -29,18 +29,15 @@ This project combines **IoT + AI + Full Stack Development** to build a real-time
 ## Tech Stack
 
 ### Frontend
-
 * React.js
 * HTML, CSS, JavaScript
 
 ### Backend
-
 * Node.js
 * Express.js
 * MongoDB (Database)
 
 ### Hardware / IoT
-
 * ESP32 microcontroller
 * GPS Module (for live location tracking)
 * GSM Module (for SMS & calling functionality)
@@ -48,6 +45,7 @@ This project combines **IoT + AI + Full Stack Development** to build a real-time
 ### Communication
 * Twilio API is integrated in the backend
 * Sends SMS alerts and makes calls via internet
+
 ---
 
 ## System Architecture
@@ -61,9 +59,35 @@ This project combines **IoT + AI + Full Stack Development** to build a real-time
 
 ---
 
-## How It Works
+## 🔄 Workflow
 
-<img src="./images/workflow.png" width="500"/>
+<p align="center">
+  <img src="./images/workflow.png" width="500"/>
+</p>
+
+---
+
+## 📸 Output
+
+<p align="center">
+  <img src="./images/demo_call.jpeg" width="45%" />
+  <img src="./images/demo_msg.jpeg" width="45%" />
+</p>
+
+---
+
+## 🔧 Hardware Setup
+
+- Connect ESP32 with GPS module (UART pins)
+- Connect GSM module for SMS/calling
+- Power supply via battery pack
+- Upload firmware using Arduino IDE
+
+<p align="center">
+  <img src="./images/hardware.jpeg" width="500"/>
+</p>
+
+---
 
 ## Project Structure
 
