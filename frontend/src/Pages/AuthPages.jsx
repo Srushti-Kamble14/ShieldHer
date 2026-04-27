@@ -363,7 +363,7 @@ function LoginPage({ onSwitch }) {
         <div style={{ position: "relative", zIndex: 1 }}>
           <div
             style={{
-             fontSize: "clamp(9px, 2.5vw, 10px)",
+              fontSize: "clamp(9px, 2.5vw, 10px)",
               letterSpacing: "5px",
               color: "rgba(0, 208, 255, 0.62)",
               marginBottom: "10px",
@@ -375,9 +375,9 @@ function LoginPage({ onSwitch }) {
           <h1
             style={{
               margin: 0,
-            fontSize: "clamp(1.4rem, 5vw, 2rem)",
-letterSpacing: "clamp(2px, 1vw, 4px)",
-              
+              fontSize: "clamp(1.4rem, 5vw, 2rem)",
+              letterSpacing: "clamp(2px, 1vw, 4px)",
+
               color: "#7de8ff",
               textShadow: "0 0 30px rgba(0,207,255,0.5)",
               fontFamily: "'Courier New', monospace",
@@ -389,7 +389,7 @@ letterSpacing: "clamp(2px, 1vw, 4px)",
           <p
             style={{
               margin: "8px 0 0",
-            fontSize: "clamp(10px, 3vw, 12px)",
+              fontSize: "clamp(10px, 3vw, 12px)",
               color: "rgba(100, 201, 255, 0.57)",
               letterSpacing: "1.5px",
               fontFamily: "'Courier New', monospace",
@@ -723,200 +723,228 @@ function SignupPage({ onSwitch }) {
     }
   };
 
-return (
-  <div
-    style={{
-      position: "relative",
-      zIndex: 10,
-      width: "100%",
-      padding: "clamp(20px, 5vw, 40px) clamp(16px, 5vw, 36px)",
-      margin: "0 auto",
-      animation: "slideUp 0.6s cubic-bezier(0.23,1,0.32,1) both",
-    }}
-  >
-    <div
-      style={{
-        border: "1px solid rgba(0,180,255,0.18)",
-        borderRadius: "16px",
-        padding: "36px",
-        background: `
-          linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)),
-          url(${sign})
-        `,
-        backgroundSize: "contain",
-        backgroundRepeat: "no-repeat",
-        backgroundPosition: "center",
-        boxShadow:
-          "0 0 60px rgba(0,100,200,0.15), 0 2px 0 rgba(0,207,255,0.08) inset",
-        position: "relative",
-        overflow: "hidden",
-      }}
-    >
-      {/* overlay */}
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          background:
-            "linear-gradient(rgba(29, 56, 124, 0.36), rgba(0, 0, 0, 0.48))",
-          pointerEvents: "none",
-        }}
-      />
-
-      <div style={{ position: "relative", zIndex: 1 }}>
-        <div style={{ textAlign: "center", marginBottom: "28px" }}>
-          <div style={{ letterSpacing: "5px", color: "rgba(0,207,255,0.45)" }}>
-            ◈ JOIN THE SHIELD
-          </div>
-
-          <h1 style={{ color: "#7de8ff", margin: 0 }}>
-            CREATE ACCOUNT
-          </h1>
-
-          <p style={{ color: "rgba(100,200,255,0.45)" }}>
-            SHIELDHER · POWERING RESILIENCE
-          </p>
-        </div>
-
-        {/* fields */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-          <Field label="Full Name" type="text" value={name} onChange={(e) => setName(e.target.value)} />
-          <Field label="Email Address" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-          <Field label="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-          <Field label="Confirm Password" type="password" value={confirm} onChange={(e) => setConfirm(e.target.value)} />
-        </div>
-
-        {/* button */}
-        <button onClick={handleRegister}>
-          JOIN SHIELDHER
-        </button>
-
-        {/* login switch */}
-        <p style={{ textAlign: "center" }}>
-          ALREADY PROTECTED?{" "}
-          <span onClick={onSwitch} style={{ color: "#00cfff", cursor: "pointer" }}>
-            SIGN IN
-          </span>
-        </p>
-
-        {/* corners FIXED */}
-        <div>
-          {cornerStyles.map((s, i) => (
-            <div
-              key={i}
-              style={{
-                position: "absolute",
-                width: "14px",
-                height: "14px",
-                border: "1px solid rgba(0,207,255,0.25)",
-                ...s,
-              }}
-            />
-          ))}
-        </div>
-      </div>
-    </div>
-  </div>
-);
-
-// ── Main Export ───────────────────────────────────────────────
-export default function AuthPages() {
-  const [page, setPage] = useState("login");
-
   return (
     <div
       style={{
-        minHeight: "100vh",
-        width: "100%",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "24px 16px",
-        boxSizing: "border-box",
-        fontFamily: "'Courier New', monospace",
         position: "relative",
-        overflow: "hidden",
+        zIndex: 10,
+        width: "100%",
+        padding: "clamp(20px, 5vw, 40px) clamp(16px, 5vw, 36px)",
+        margin: "0 auto",
+        animation: "slideUp 0.6s cubic-bezier(0.23,1,0.32,1) both",
       }}
     >
-      <AnimatedBackground mode={page} />
-
-      {[
-        { top: 16, left: 16, borderTop: "1px solid", borderLeft: "1px solid" },
-        {
-          top: 16,
-          right: 16,
-          borderTop: "1px solid",
-          borderRight: "1px solid",
-        },
-        {
-          bottom: 16,
-          left: 16,
-          borderBottom: "1px solid",
-          borderLeft: "1px solid",
-        },
-        {
-          bottom: 16,
-          right: 16,
-          borderBottom: "1px solid",
-          borderRight: "1px solid",
-        },
-      ].map((s, i) => (
+      <div
+        style={{
+          border: "1px solid rgba(0,180,255,0.18)",
+          borderRadius: "16px",
+          padding: "36px",
+          background: `
+          linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)),
+          url(${sign})
+        `,
+          backgroundSize: "contain",
+          backgroundRepeat: "no-repeat",
+          backgroundPosition: "center",
+          boxShadow:
+            "0 0 60px rgba(0,100,200,0.15), 0 2px 0 rgba(0,207,255,0.08) inset",
+          position: "relative",
+          overflow: "hidden",
+        }}
+      >
+        {/* overlay */}
         <div
-          key={i}
           style={{
-            position: "fixed",
-            width: "24px",
-            height: "24px",
-            borderColor: "rgba(0,180,255,0.22)",
-            ...s,
-            zIndex: 20,
+            position: "absolute",
+            inset: 0,
+            background:
+              "linear-gradient(rgba(29, 56, 124, 0.36), rgba(0, 0, 0, 0.48))",
             pointerEvents: "none",
           }}
         />
-      ))}
 
+        <div style={{ position: "relative", zIndex: 1 }}>
+          <div style={{ textAlign: "center", marginBottom: "28px" }}>
+            <div
+              style={{ letterSpacing: "5px", color: "rgba(0,207,255,0.45)" }}
+            >
+              ◈ JOIN THE SHIELD
+            </div>
+
+            <h1 style={{ color: "#7de8ff", margin: 0 }}>CREATE ACCOUNT</h1>
+
+            <p style={{ color: "rgba(100,200,255,0.45)" }}>
+              SHIELDHER · POWERING RESILIENCE
+            </p>
+          </div>
+
+          {/* fields */}
+          <div
+            style={{ display: "flex", flexDirection: "column", gap: "14px" }}
+          >
+            <Field
+              label="Full Name"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+            <Field
+              label="Email Address"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <Field
+              label="Password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <Field
+              label="Confirm Password"
+              type="password"
+              value={confirm}
+              onChange={(e) => setConfirm(e.target.value)}
+            />
+          </div>
+
+          {/* button */}
+          <button onClick={handleRegister}>JOIN SHIELDHER</button>
+
+          {/* login switch */}
+          <p style={{ textAlign: "center" }}>
+            ALREADY PROTECTED?{" "}
+            <span
+              onClick={onSwitch}
+              style={{ color: "#00cfff", cursor: "pointer" }}
+            >
+              SIGN IN
+            </span>
+          </p>
+
+          {/* corners FIXED */}
+          <div>
+            {cornerStyles.map((s, i) => (
+              <div
+                key={i}
+                style={{
+                  position: "absolute",
+                  width: "14px",
+                  height: "14px",
+                  border: "1px solid rgba(0,207,255,0.25)",
+                  ...s,
+                }}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  // ── Main Export ───────────────────────────────────────────────
+  export default function AuthPages() {
+    const [page, setPage] = useState("login");
+
+    return (
       <div
         style={{
-          position: "fixed",
-          top: "20px",
-          left: "50%",
-          transform: "translateX(-50%)",
-          zIndex: 20,
-          pointerEvents: "none",
+          minHeight: "100vh",
+          width: "100%",
           display: "flex",
           alignItems: "center",
-          gap: "8px",
-        }}
-      >
-        <span
-          style={{
-            display: "inline-block",
-            width: "6px",
-            height: "6px",
-            borderRadius: "50%",
-            background: "#00cfff",
-            boxShadow: "0 0 8px #00cfff",
-            animation: "pulseDot 1.4s ease-in-out infinite",
-          }}
-        />
-      </div>
-
-      <div
-        style={{
+          justifyContent: "center",
+          padding: "24px 16px",
+          boxSizing: "border-box",
+          fontFamily: "'Courier New', monospace",
           position: "relative",
-          zIndex: 10,
-          width: "100%",
-          maxWidth: "420px",
+          overflow: "hidden",
         }}
       >
-        {page === "login" ? (
-          <LoginPage onSwitch={() => setPage("signup")} />
-        ) : (
-          <SignupPage onSwitch={() => setPage("login")} />
-        )}
-      </div>
+        <AnimatedBackground mode={page} />
 
-      <style>{`
+        {[
+          {
+            top: 16,
+            left: 16,
+            borderTop: "1px solid",
+            borderLeft: "1px solid",
+          },
+          {
+            top: 16,
+            right: 16,
+            borderTop: "1px solid",
+            borderRight: "1px solid",
+          },
+          {
+            bottom: 16,
+            left: 16,
+            borderBottom: "1px solid",
+            borderLeft: "1px solid",
+          },
+          {
+            bottom: 16,
+            right: 16,
+            borderBottom: "1px solid",
+            borderRight: "1px solid",
+          },
+        ].map((s, i) => (
+          <div
+            key={i}
+            style={{
+              position: "fixed",
+              width: "24px",
+              height: "24px",
+              borderColor: "rgba(0,180,255,0.22)",
+              ...s,
+              zIndex: 20,
+              pointerEvents: "none",
+            }}
+          />
+        ))}
+
+        <div
+          style={{
+            position: "fixed",
+            top: "20px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            zIndex: 20,
+            pointerEvents: "none",
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+          }}
+        >
+          <span
+            style={{
+              display: "inline-block",
+              width: "6px",
+              height: "6px",
+              borderRadius: "50%",
+              background: "#00cfff",
+              boxShadow: "0 0 8px #00cfff",
+              animation: "pulseDot 1.4s ease-in-out infinite",
+            }}
+          />
+        </div>
+
+        <div
+          style={{
+            position: "relative",
+            zIndex: 10,
+            width: "100%",
+            maxWidth: "420px",
+          }}
+        >
+          {page === "login" ? (
+            <LoginPage onSwitch={() => setPage("signup")} />
+          ) : (
+            <SignupPage onSwitch={() => setPage("login")} />
+          )}
+        </div>
+
+        <style>{`
         @keyframes pulseDot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.3;transform:scale(0.5)} }
         @keyframes slideUp { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:translateY(0)} }
         *{box-sizing:border-box}
@@ -924,6 +952,7 @@ export default function AuthPages() {
         input::placeholder{color:rgba(0,150,200,0.3)}
         input:-webkit-autofill{-webkit-box-shadow:0 0 0 100px rgba(0,25,65,0.9) inset !important;-webkit-text-fill-color:#a8f0ff !important}
       `}</style>
-    </div>
-  );
+      </div>
+    );
+  }
 }
