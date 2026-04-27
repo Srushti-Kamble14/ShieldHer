@@ -1,4 +1,4 @@
-const BASE_URL = `${import.meta.env.VITE_API_URL}/api/auth`;
+const BASE_URL = "https://shieldher-backend-1h8b.onrender.com/api/auth";
 
 // REGISTER API
 export const registerUser = async (userData) => {

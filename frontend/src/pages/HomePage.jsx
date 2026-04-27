@@ -77,9 +77,12 @@ function Navbar({ navigate }) {
           return;
         }
 
-        const res = await fetch("http://localhost:5000/api/profile", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await fetch(
+          "https://shieldher-backend-1h8b.onrender.com/api/profile",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
 
         if (res.ok) navigate("/dashboard");
         else navigate("/details");
@@ -110,18 +113,14 @@ function Navbar({ navigate }) {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          background: scrolled
-            ? "rgba(6,13,26,0.97)"
-            : "rgba(6,13,26,0.72)",
+          background: scrolled ? "rgba(6,13,26,0.97)" : "rgba(6,13,26,0.72)",
           backdropFilter: "blur(24px)",
           borderBottom: "1px solid rgba(0,180,255,0.14)",
         }}
       >
         {/* LOGO */}
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <span style={{ color: "#00cfff", fontSize: "12px" }}>
-            SHIELDHER
-          </span>
+          <span style={{ color: "#00cfff", fontSize: "12px" }}>SHIELDHER</span>
         </div>
 
         {/* 🔥 DESKTOP NAV */}
@@ -370,13 +369,15 @@ function Hero({ navigate }) {
                   navigate("/details"); // not logged in → create profile
                   return;
                 }
-
-                const res = await fetch( `${BASE_URL}/profile`, {
-                  method: "GET",
-                  headers: {
-                    Authorization: `Bearer ${token}`,
+                const res = await fetch(
+                  "https://shieldher-backend-1h8b.onrender.com/api/profile",
+                  {
+                    method: "GET",
+                    headers: {
+                      Authorization: `Bearer ${token}`,
+                    },
                   },
-                });
+                );
 
                 if (res.ok) {
                   // ✅ profile exists
