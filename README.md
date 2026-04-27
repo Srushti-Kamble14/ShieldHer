@@ -63,27 +63,7 @@ This project combines **IoT + AI + Full Stack Development** to build a real-time
 
 ## How It Works
 
-### 1. Voice Activation
-
-* User says a predefined emergency keyword
-* System detects and triggers alert sequence
-
-### 2. Hardware Trigger
-
-* Physical button connected to ESP32
-* On press, system immediately activates emergency mode
-
-### 3. Location Sharing
-
-* GPS module captures latitude & longitude
-* Live location link is sent to emergency contacts
-
-### 4. Emergency Communication
-
-* GSM module sends SMS
-* Automatically calls saved emergency contacts
-
----
+<img src="./images/workflow.png" width="500"/>
 
 ## Project Structure
 
@@ -136,9 +116,11 @@ TWILIO_PHONE_NUMBER=your_twilio_phone_number
 MONGO_URI=your_mongodb_connection_string
 PORT=5000
 
-```
+##OUTPUT
+<img src="./images/Demo_call.jpeg" width="500"/>
 
----
+<img src="./images/Demo_msg.jpeg" width="500"/>
+
 
 ## Hardware Setup
 
@@ -147,7 +129,9 @@ PORT=5000
 - Power supply via battery pack
 - Upload firmware using Arduino IDE
 
----
+<img src="./images/hardware.jpeg" width="500"/>
+
+```
 
 ## Future Improvements
 
@@ -158,23 +142,9 @@ PORT=5000
 
 ---
 
-## Use Case
-
-- Late-night travel safety
-- Emergency situations in isolated areas
-- Women safety in public transport or remote locations
-
----
-
 ## Team / Project
 
-Developed as part of an engineering project focused on **Smart Safety Systems using AI + IoT + Web Technologies**.
-
----
-
-## Conclusion
-
-ShieldHer is designed to provide **fast, reliable, and automated emergency response** for women safety using modern technology integration.
+Developed as part of an ELITE_HACETHON project focused on **Real-Time Smart Safety Systems using IoT + Web Technologies**.
 
 ---
 
