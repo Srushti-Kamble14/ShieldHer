@@ -153,7 +153,7 @@ TWILIO_PHONE_NUMBER=your_twilio_phone_number
 Developed as part of an ELITE_HACKATHON project focused on **Real-Time Smart Safety Systems using IoT + Web Technologies**.
 
 ---
-
+Live link 🖇️ - https://shield-her-x2gl.vercel.app
 ⭐ If you like this project, consider giving it a star!
 
 ```
