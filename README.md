@@ -150,7 +150,7 @@ TWILIO_PHONE_NUMBER=your_twilio_phone_number
 
 ## Team / Project
 
-Developed as part of an ELITE_HACETHON project focused on **Real-Time Smart Safety Systems using IoT + Web Technologies**.
+Developed as part of an ELITE_HACKATHON project focused on **Real-Time Smart Safety Systems using IoT + Web Technologies**.
 
 ---
 
