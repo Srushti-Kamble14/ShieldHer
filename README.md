@@ -69,6 +69,9 @@ This project combines **IoT + AI + Full Stack Development** to build a real-time
 
 ## 📸 Output
 
+
+Live link 🖇️ - https://shield-her-x2gl.vercel.app
+
 <p align="center">
   <img src="./images/Demo_call.jpeg" width="45%" />
   <img src="./images/Demo_msg.jpeg" width="45%" />
@@ -153,7 +156,6 @@ TWILIO_PHONE_NUMBER=your_twilio_phone_number
 Developed as part of an ELITE_HACKATHON project focused on **Real-Time Smart Safety Systems using IoT + Web Technologies**.
 
 ---
-Live link 🖇️ - https://shield-her-x2gl.vercel.app
 ⭐ If you like this project, consider giving it a star!
 
 ```
