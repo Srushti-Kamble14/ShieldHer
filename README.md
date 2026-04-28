@@ -137,8 +137,6 @@ TWILIO_AUTH_TOKEN=your_twilio_auth_token
 TWILIO_PHONE_NUMBER=your_twilio_phone_number
 ```
 
-MONGO_URI=your_mongodb_connection_string
-PORT=5000
 ```
 
 ## Future Improvements
