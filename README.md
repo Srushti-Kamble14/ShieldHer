@@ -69,6 +69,9 @@ This project combines **IoT + AI + Full Stack Development** to build a real-time
 
 ## 📸 Output
 
+
+Live link 🖇️ - https://shield-her-x2gl.vercel.app
+
 <p align="center">
   <img src="./images/Demo_call.jpeg" width="45%" />
   <img src="./images/Demo_msg.jpeg" width="45%" />
