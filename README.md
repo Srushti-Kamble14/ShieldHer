@@ -1,4 +1,4 @@
-# ShieldHer 🚨🤖
+# ShieldHer 
 
 ## Overview
 
