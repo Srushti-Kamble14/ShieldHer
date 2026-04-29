@@ -451,10 +451,7 @@ export default function PersonalDetailsPage() {
   const ok2 = address.line1 && address.city && address.pincode;
 
   useEffect(() => {
-    const 
-    
-    
-    fetchProfile = async () => {
+    const  fetchProfile = async () => {
       try {
         const token = localStorage.getItem("token");
         if (!token) { setIsProfileExists(false); return; }

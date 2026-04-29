@@ -73,7 +73,7 @@ function Navbar({ navigate }) {
         const token = localStorage.getItem("token");
 
         if (!token) {
-          navigate("/details");
+          navigate("/login");
           return;
         }
 
