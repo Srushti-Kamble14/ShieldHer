@@ -1,4 +1,5 @@
 
+
 // import { useState, useEffect, useRef } from "react";
 // import bg from "../assets/bg.jpg";
 
@@ -1660,8 +1661,8 @@
 //     </>
 //   );
 // }
-
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 /* ─── CSS ────────────────────────────────────────────────────── */
 const CSS = `
@@ -1994,6 +1995,7 @@ function BG() {
 
 /* ─── Navbar ─────────────────────────────────────────────────── */
 function Navbar({ name, shieldActive }) {
+    const navigate = useNavigate();
   return (
     <nav
       style={{
@@ -2080,15 +2082,22 @@ function Navbar({ name, shieldActive }) {
               flexShrink: 0,
             }}
           />
-          <span
-            className="nav-shield-label"
-            style={{
-              color: "rgba(0,207,255,0.7)",
-              fontFamily: "'Courier New',monospace",
-            }}
-          >
-            SHIELD ACTIVE
-          </span>
+         <button
+  onClick={() => navigate("/home")}
+  style={{
+    padding: "6px 12px",
+    background: "rgba(0,207,255,0.1)",
+    border: "1px solid rgba(0,207,255,0.4)",
+    borderRadius: "6px",
+    color: "#00cfff",
+    fontSize: "11px",
+    letterSpacing: "1px",
+    cursor: "pointer",
+    marginLeft: "10px"
+  }}
+>
+  HOME
+</button>
         </div>
         <div
           style={{
@@ -2726,30 +2735,46 @@ export default function Dashboard() {
   const [shieldActive, setShieldActive] = useState(true);
   const [uptime] = useState("04:27:13");
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const res = await fetch(
-          "https://shieldher-backend-1h8b.onrender.com/api/profile",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          },
-        );
+  const handleClick = async (e, l) => {
+  e.preventDefault();
 
-        if (!res.ok) {
-          console.error("Failed to fetch profile");
-          return;
-        }
+  if (l === "Profile") {
+    try {
+      const token = localStorage.getItem("token");
 
-        const data = await res.json();
-        setProfile(data);
-      } catch (err) {
-        console.error(err);
+      if (!token) {
+        navigate("/details");
+        return;
       }
-    };
+
+      const res = await fetch(
+        "https://shieldher-backend-1h8b.onrender.com/api/profile",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log("STATUS:", res.status); // 👈 DEBUG
+
+      if (res.status === 200) {
+        navigate("/dashboard");
+      } else if (res.status === 404) {
+        navigate("/details");
+      } else if (res.status === 401) {
+        localStorage.removeItem("token");
+        navigate("/login");
+      } else {
+        navigate("/details");
+      }
+    } catch (err) {
+      console.error("Error:", err);
+      navigate("/details");
+    }
+  }
+};
+  useEffect(() => {
     fetchProfile();
   }, []);
 
