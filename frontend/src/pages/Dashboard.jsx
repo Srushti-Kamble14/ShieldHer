@@ -1073,30 +1073,30 @@ export default function Dashboard() {
   const [shieldActive, setShieldActive] = useState(true);
   const [uptime] = useState("04:27:13");
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const res = await fetch(
-          "https://shieldher-backend-1h8b.onrender.com/api/profile",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+  const fetchProfile = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(
+        "https://shieldher-backend-1h8b.onrender.com/api/profile",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
           },
-        );
+        },
+      );
 
-        if (!res.ok) {
-          console.error("Failed to fetch profile");
-          return;
-        }
-
-        const data = await res.json();
-        setProfile(data);
-      } catch (err) {
-        console.error(err);
+      if (!res.ok) {
+        console.error("Failed to fetch profile");
+        return;
       }
-    };
+
+      const data = await res.json();
+      setProfile(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  useEffect(() => {
     fetchProfile();
   }, []);
 

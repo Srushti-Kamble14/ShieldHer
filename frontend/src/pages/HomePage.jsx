@@ -80,11 +80,23 @@ function Navbar({ navigate }) {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        if (res.ok) navigate("/dashboard");
-        else navigate("/details");
-      } catch {
-        navigate("/details");
-      }
+       if (res.status === 200) {
+  navigate("/dashboard");   // profile exists
+} 
+else if (res.status === 404) {
+  navigate("/details");     // profile not created
+} 
+else if (res.status === 401) {
+  localStorage.removeItem("token");
+  navigate("/login");       // token invalid
+} 
+else {
+  navigate("/details");     // fallback
+}
+      } catch (err) {
+  console.error("Profile fetch error:", err);
+  navigate("/details");
+}
     } else {
       const sectionId = l.toLowerCase().replace(/ /g, "-");
       document
