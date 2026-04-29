@@ -454,7 +454,7 @@ export default function PersonalDetailsPage() {
     const 
     
     
-    Profile = async () => {
+    fetchProfile = async () => {
       try {
         const token = localStorage.getItem("token");
         if (!token) { setIsProfileExists(false); return; }
