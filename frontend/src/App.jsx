@@ -8,7 +8,7 @@ import SOSConfirmation from "./pages/sosConfirmation";
 import HomePage from "./pages/HomePage";
 import ShieldHerFlipbook from "./pages/ShieldHerFlipbook";
 import Dashboard from "./pages/Dashboard";
-import AuthRedirect from "./Components/AuthRedirect";
+
 function App() {
   return (
     <BrowserRouter>
@@ -17,7 +17,7 @@ function App() {
 
         <Route path="/login" element={<AuthPages />} />
 
-        <Route path="/home" element={<AuthRedirect  />} />
+        <Route path="/home" element={<HomePage  />} />
 
         <Route path="/details" element={<PersonalDetailsPage />} />
 
