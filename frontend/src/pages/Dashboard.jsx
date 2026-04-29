@@ -1073,29 +1073,45 @@ export default function Dashboard() {
   const [shieldActive, setShieldActive] = useState(true);
   const [uptime] = useState("04:27:13");
 
-  const fetchProfile = async () => {
+  const handleClick = async (e, l) => {
+  e.preventDefault();
+
+  if (l === "Profile") {
     try {
       const token = localStorage.getItem("token");
+
+      if (!token) {
+        navigate("/details");
+        return;
+      }
+
       const res = await fetch(
         "https://shieldher-backend-1h8b.onrender.com/api/profile",
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        },
+        }
       );
 
-      if (!res.ok) {
-        console.error("Failed to fetch profile");
-        return;
-      }
+      console.log("STATUS:", res.status); // 👈 DEBUG
 
-      const data = await res.json();
-      setProfile(data);
+      if (res.status === 200) {
+        navigate("/dashboard");
+      } else if (res.status === 404) {
+        navigate("/details");
+      } else if (res.status === 401) {
+        localStorage.removeItem("token");
+        navigate("/login");
+      } else {
+        navigate("/details");
+      }
     } catch (err) {
-      console.error(err);
+      console.error("Error:", err);
+      navigate("/details");
     }
-  };
+  }
+};
   useEffect(() => {
     fetchProfile();
   }, []);
