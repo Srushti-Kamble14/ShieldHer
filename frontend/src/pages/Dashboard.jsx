@@ -1073,15 +1073,14 @@ export default function Dashboard() {
   const [shieldActive, setShieldActive] = useState(true);
   const [uptime] = useState("04:27:13");
 
-  const handleClick = async (e, l) => {
-  e.preventDefault();
+  const navigate = useNavigate();
 
-  if (l === "Profile") {
+  const fetchProfile = async () => {
     try {
       const token = localStorage.getItem("token");
 
       if (!token) {
-        navigate("/details");
+        navigate("/login");
         return;
       }
 
@@ -1094,24 +1093,29 @@ export default function Dashboard() {
         }
       );
 
-      console.log("STATUS:", res.status); // 👈 DEBUG
+      console.log("STATUS:", res.status);
 
       if (res.status === 200) {
-        navigate("/dashboard");
-      } else if (res.status === 404) {
+        const data = await res.json();
+        setProfile(data);
+      } 
+      else if (res.status === 404) {
         navigate("/details");
-      } else if (res.status === 401) {
+      } 
+      else if (res.status === 401) {
         localStorage.removeItem("token");
         navigate("/login");
-      } else {
+      } 
+      else {
         navigate("/details");
       }
     } catch (err) {
-      console.error("Error:", err);
+      console.error(err);
       navigate("/details");
     }
-  }
-};
+  };
+
+  // ✅ ONLY ONE useEffect (correct place)
   useEffect(() => {
     fetchProfile();
   }, []);

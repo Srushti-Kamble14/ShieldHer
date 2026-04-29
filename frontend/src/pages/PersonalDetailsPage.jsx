@@ -361,7 +361,7 @@ export default function PersonalDetailsPage() {
 
   // Load existing profile
   useEffect(() => {
-    const  Profile = async () => {
+    const  fetchProfile = async () => {
       try {
         const token = localStorage.getItem("token");
         if (!token) { setIsProfileExists(false); return; }
