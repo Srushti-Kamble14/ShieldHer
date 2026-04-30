@@ -62,55 +62,55 @@ function Navbar({ navigate }) {
     "Instruction Manual",
     "How It Works",
     "Profile",
-    <button
-      onClick={() => {
-        localStorage.removeItem("token");
-        navigate("/");
-      }}
-      title="Logout"
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: "5px",
-        padding: "6px 10px",
-        background: "rgba(0,207,255,0.06)",
-        border: "1px solid rgba(0,180,255,0.25)",
-        borderRadius: "6px",
-        color: "rgba(0,207,255,0.65)",
-        fontSize: "10px",
-        letterSpacing: "1.5px",
-        fontFamily: "'Courier New', monospace",
-        cursor: "pointer",
-        transition: "all .2s",
-        flexShrink: 0,
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.background = "rgba(0,207,255,0.12)";
-        e.currentTarget.style.borderColor = "rgba(0,207,255,0.55)";
-        e.currentTarget.style.color = "#7de8ff";
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.background = "rgba(0,207,255,0.06)";
-        e.currentTarget.style.borderColor = "rgba(0,180,255,0.25)";
-        e.currentTarget.style.color = "rgba(0,207,255,0.65)";
-      }}
-    >
-      <svg
-        width="13"
-        height="13"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-        <polyline points="16 17 21 12 16 7" />
-        <line x1="21" y1="12" x2="9" y2="12" />
-      </svg>
-      <span className="nav-session-text">LOGOUT</span>
-    </button>,
+   <button
+              onClick={() => {
+                localStorage.removeItem("token");
+                navigate("/");
+              }}
+              title="Logout"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "5px",
+                padding: "6px 10px",
+                background: "rgba(0,207,255,0.06)",
+                border: "1px solid rgba(0,180,255,0.25)",
+                borderRadius: "6px",
+                color: "rgba(0,207,255,0.65)",
+                fontSize: "10px",
+                letterSpacing: "1.5px",
+                fontFamily: "'Courier New', monospace",
+                cursor: "pointer",
+                transition: "all .2s",
+                flexShrink: 0,
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "rgba(0,207,255,0.12)";
+                e.currentTarget.style.borderColor = "rgba(0,207,255,0.55)";
+                e.currentTarget.style.color = "#7de8ff";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "rgba(0,207,255,0.06)";
+                e.currentTarget.style.borderColor = "rgba(0,180,255,0.25)";
+                e.currentTarget.style.color = "rgba(0,207,255,0.65)";
+              }}
+            >
+              <svg
+                width="13"
+                height="13"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <polyline points="16 17 21 12 16 7" />
+                <line x1="21" y1="12" x2="9" y2="12" />
+              </svg>
+              <span className="nav-session-text">LOGOUT</span>
+            </button>
   ];
 
   // ✅ COMMON CLICK HANDLER (VERY IMPORTANT)
@@ -133,20 +133,23 @@ function Navbar({ navigate }) {
           },
         );
 
-        if (res.status === 200) {
-          navigate("/dashboard"); // profile exists
-        } else if (res.status === 404) {
-          navigate("/details"); // profile not created
-        } else if (res.status === 401) {
-          localStorage.removeItem("token");
-          navigate("/login"); // token invalid
-        } else {
-          navigate("/details"); // fallback
-        }
+       if (res.status === 200) {
+  navigate("/dashboard");   // profile exists
+} 
+else if (res.status === 404) {
+  navigate("/details");     // profile not created
+} 
+else if (res.status === 401) {
+  localStorage.removeItem("token");
+  navigate("/login");       // token invalid
+} 
+else {
+  navigate("/details");     // fallback
+}
       } catch (err) {
-        console.error("Profile fetch error:", err);
-        navigate("/details");
-      }
+  console.error("Profile fetch error:", err);
+  navigate("/details");
+}
     } else {
       const sectionId = l.toLowerCase().replace(/ /g, "-");
       document
