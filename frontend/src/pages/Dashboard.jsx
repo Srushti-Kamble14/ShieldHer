@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import bg from "../assets/bg.jpg";
 import { Navigate, useNavigate } from "react-router-dom";
+import { use } from "react";
 
 /* ─── CSS ────────────────────────────────────────────────────── */
 const CSS = `
@@ -196,9 +197,21 @@ function BG() {
 
 /* ─── Navbar ─────────────────────────────────────────────────── */
 function Navbar({ name }) {
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const navigate = useNavigate();
   return (
-    
     <nav
       style={{
         position: "fixed",
@@ -272,11 +285,13 @@ function Navbar({ name }) {
       </span>
 
       {/* Right */}
+      {/* Right */}
       <div
         style={{
           display: "flex",
           alignItems: "center",
           gap: "clamp(8px, 2vw, 16px)",
+          position: "relative",
         }}
       >
         <div
@@ -313,27 +328,208 @@ function Navbar({ name }) {
             SHIELD ACTIVE
           </span>
         </div>
-        <div
-          style={{
-            width: "36px",
-            height: "36px",
-            borderRadius: "50%",
-            flexShrink: 0,
-            border: "1.5px solid rgba(0,207,255,0.45)",
-            background:
-              "linear-gradient(135deg,rgba(0,80,180,0.4),rgba(0,207,255,0.2))",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontFamily: "'Orbitron',monospace",
-            fontSize: "13px",
-            color: "#00cfff",
-            fontWeight: 700,
-            boxShadow: "0 0 10px rgba(0,207,255,0.2)",
-            cursor: "pointer",
-          }}
-        >
-          {name?.[0]?.toUpperCase() || "P"}
+
+        {/* Avatar + Dropdown */}
+        <div style={{ position: "relative" }} ref={dropdownRef}>
+          <div
+            onClick={() => setDropdownOpen((o) => !o)}
+            style={{
+              width: "36px",
+              height: "36px",
+              borderRadius: "50%",
+              flexShrink: 0,
+              border: `1.5px solid ${dropdownOpen ? "rgba(0,207,255,0.8)" : "rgba(0,207,255,0.45)"}`,
+              background:
+                "linear-gradient(135deg,rgba(0,80,180,0.4),rgba(0,207,255,0.2))",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontFamily: "'Orbitron',monospace",
+              fontSize: "13px",
+              color: "#00cfff",
+              fontWeight: 700,
+              boxShadow: dropdownOpen
+                ? "0 0 18px rgba(0,207,255,0.45)"
+                : "0 0 10px rgba(0,207,255,0.2)",
+              cursor: "pointer",
+              transition: "all .2s",
+            }}
+          >
+            {name?.[0]?.toUpperCase() || "P"}
+          </div>
+
+          {/* Dropdown Menu */}
+          {dropdownOpen && (
+            <div
+              style={{
+                position: "absolute",
+                top: "calc(100% + 10px)",
+                right: 0,
+                minWidth: "180px",
+                background: "rgba(6,13,26,0.97)",
+                border: "1px solid rgba(0,180,255,0.22)",
+                borderRadius: "10px",
+                backdropFilter: "blur(24px)",
+                boxShadow:
+                  "0 8px 40px rgba(0,0,0,0.5), 0 0 30px rgba(0,100,200,0.12)",
+                overflow: "hidden",
+                animation: "fadeUp .18s ease both",
+                zIndex: 2000,
+              }}
+            >
+              {/* Top accent line */}
+              <div
+                style={{
+                  height: "1px",
+                  background:
+                    "linear-gradient(90deg,transparent,rgba(0,207,255,0.5),transparent)",
+                }}
+              />
+
+              {/* User info */}
+              <div
+                style={{
+                  padding: "12px 16px",
+                  borderBottom: "1px solid rgba(0,180,255,0.1)",
+                }}
+              >
+                <div
+                  style={{
+                    fontFamily: "'Orbitron',monospace",
+                    fontSize: "11px",
+                    color: "#00cfff",
+                    fontWeight: 700,
+                    letterSpacing: "1px",
+                  }}
+                >
+                  {name || "PILOT"}
+                </div>
+                <div
+                  style={{
+                    fontSize: "10px",
+                    color: "rgba(0,180,255,0.4)",
+                    fontFamily: "'Courier New',monospace",
+                    marginTop: "3px",
+                    letterSpacing: "1px",
+                  }}
+                >
+                  ACTIVE PROFILE
+                </div>
+              </div>
+
+              {/* Profile option */}
+              <div
+                onClick={() => {
+                  setDropdownOpen(false);
+                  navigate("/details");
+                }}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "10px",
+                  padding: "11px 16px",
+                  cursor: "pointer",
+                  borderBottom: "1px solid rgba(0,180,255,0.07)",
+                  transition: "background .15s",
+                }}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.background = "rgba(0,207,255,0.07)")
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.background = "transparent")
+                }
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="rgba(0,207,255,0.7)"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
+                <span
+                  style={{
+                    fontFamily: "'Courier New',monospace",
+                    fontSize: "11px",
+                    letterSpacing: "2px",
+                    color: "rgba(168,240,255,0.8)",
+                  }}
+                >
+                  PROFILE
+                </span>
+              </div>
+
+              {/* Logout option */}
+              <div
+                onClick={() => {
+                  setDropdownOpen(false);
+                  localStorage.removeItem("token");
+                  navigate("/");
+                }}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "10px",
+                  padding: "11px 16px",
+                  cursor: "pointer",
+                  transition: "background .15s",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "rgba(255,60,60,0.07)";
+                  e.currentTarget.querySelector("span").style.color = "#ff6b6b";
+                  e.currentTarget.querySelector("svg").style.stroke = "#ff6b6b";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "transparent";
+                  e.currentTarget.querySelector("span").style.color =
+                    "rgba(168,240,255,0.8)";
+                  e.currentTarget.querySelector("svg").style.stroke =
+                    "rgba(0,207,255,0.7)";
+                }}
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="rgba(0,207,255,0.7)"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  style={{ transition: "stroke .15s" }}
+                >
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                  <polyline points="16 17 21 12 16 7" />
+                  <line x1="21" y1="12" x2="9" y2="12" />
+                </svg>
+                <span
+                  style={{
+                    fontFamily: "'Courier New',monospace",
+                    fontSize: "11px",
+                    letterSpacing: "2px",
+                    color: "rgba(168,240,255,0.8)",
+                    transition: "color .15s",
+                  }}
+                >
+                  LOGOUT
+                </span>
+              </div>
+
+              {/* Bottom accent line */}
+              <div
+                style={{
+                  height: "1px",
+                  background:
+                    "linear-gradient(90deg,transparent,rgba(0,207,255,0.2),transparent)",
+                }}
+              />
+            </div>
+          )}
         </div>
       </div>
     </nav>
@@ -965,7 +1161,7 @@ export default function Dashboard() {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       console.log("STATUS:", res.status);
@@ -973,15 +1169,12 @@ export default function Dashboard() {
       if (res.status === 200) {
         const data = await res.json();
         setProfile(data);
-      } 
-      else if (res.status === 404) {
+      } else if (res.status === 404) {
         navigate("/details");
-      } 
-      else if (res.status === 401) {
+      } else if (res.status === 401) {
         localStorage.removeItem("token");
         navigate("/login");
-      } 
-      else {
+      } else {
         navigate("/details");
       }
     } catch (err) {
