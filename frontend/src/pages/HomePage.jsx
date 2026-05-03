@@ -7,6 +7,7 @@ import home from "../assets/home.jpg";
 import method1 from "../assets/method1.jpg";
 import method2 from "../assets/method2.jpg";
 import method3 from "../assets/method3.jpg";
+import { BASE_URL } from "../api/config";
 
 const CSS = `
   @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@400;500;600;700&display=swap');
@@ -61,6 +62,55 @@ function Navbar({ navigate }) {
     "Instruction Manual",
     "How It Works",
     "Profile",
+   <button
+              onClick={() => {
+                localStorage.removeItem("token");
+                navigate("/");
+              }}
+              title="Logout"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "5px",
+                padding: "6px 10px",
+                background: "rgba(0,207,255,0.06)",
+                border: "1px solid rgba(0,180,255,0.25)",
+                borderRadius: "6px",
+                color: "rgba(0,207,255,0.65)",
+                fontSize: "10px",
+                letterSpacing: "1.5px",
+                fontFamily: "'Courier New', monospace",
+                cursor: "pointer",
+                transition: "all .2s",
+                flexShrink: 0,
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "rgba(0,207,255,0.12)";
+                e.currentTarget.style.borderColor = "rgba(0,207,255,0.55)";
+                e.currentTarget.style.color = "#7de8ff";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "rgba(0,207,255,0.06)";
+                e.currentTarget.style.borderColor = "rgba(0,180,255,0.25)";
+                e.currentTarget.style.color = "rgba(0,207,255,0.65)";
+              }}
+            >
+              <svg
+                width="13"
+                height="13"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <polyline points="16 17 21 12 16 7" />
+                <line x1="21" y1="12" x2="9" y2="12" />
+              </svg>
+              <span className="nav-session-text">LOGOUT</span>
+            </button>
   ];
 
   // ✅ COMMON CLICK HANDLER (VERY IMPORTANT)
@@ -76,9 +126,12 @@ function Navbar({ navigate }) {
           return;
         }
 
-        const res = await fetch("https://shieldher-backend-1h8b.onrender.com/api/profile", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await fetch(
+          "https://shieldher-backend-1h8b.onrender.com/api/profile",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
 
        if (res.status === 200) {
   navigate("/dashboard");   // profile exists
@@ -121,18 +174,14 @@ else {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          background: scrolled
-            ? "rgba(6,13,26,0.97)"
-            : "rgba(6,13,26,0.72)",
+          background: scrolled ? "rgba(6,13,26,0.97)" : "rgba(6,13,26,0.72)",
           backdropFilter: "blur(24px)",
           borderBottom: "1px solid rgba(0,180,255,0.14)",
         }}
       >
         {/* LOGO */}
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <span style={{ color: "#00cfff", fontSize: "12px" }}>
-            SHIELDHER
-          </span>
+          <span style={{ color: "#00cfff", fontSize: "12px" }}>SHIELDHER</span>
         </div>
 
         {/* 🔥 DESKTOP NAV */}
@@ -381,13 +430,15 @@ function Hero({ navigate }) {
                   navigate("/details"); // not logged in → create profile
                   return;
                 }
-
-                const res = await fetch("https://shieldher-backend-1h8b.onrender.com/api/profile", {
-                  method: "GET",
-                  headers: {
-                    Authorization: `Bearer ${token}`,
+                const res = await fetch(
+                  "https://shieldher-backend-1h8b.onrender.com/api/profile",
+                  {
+                    method: "GET",
+                    headers: {
+                      Authorization: `Bearer ${token}`,
+                    },
                   },
-                });
+                );
 
                 if (res.ok) {
                   // ✅ profile exists

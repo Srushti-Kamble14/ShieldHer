@@ -1,5 +1,4 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-
 import ShieldHerLoader from "./pages/ShieldHerLoader";
 import AuthPages from "./pages/AuthPages";
 import { Home } from "./pages/Home";
@@ -15,7 +14,7 @@ function App() {
       <Routes>
         <Route path="/" element={<ShieldHerLoader />} />
 
-        <Route path="/login" element={<AuthPages />} />
+        <Route path="/auth" element={<AuthPages />} />
 
         <Route path="/home" element={<HomePage  />} />
 
@@ -23,7 +22,6 @@ function App() {
 
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/sos-confirmation" element={<SOSConfirmation />} />
-
       
       </Routes>
     </BrowserRouter>

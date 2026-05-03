@@ -11,9 +11,9 @@ export const triggerSOS = async (lat, lng) => {
   // Decode token to get user info
   const payload = JSON.parse(atob(token.split(".")[1]));
   const userId = payload.id;
+  const API_URL = import.meta.env.VITE_API_URL;
 
   console.log("Triggering SOS for userId:", userId, "at", lat, lng);
-
   const res = await fetch("https://shieldher-backend-1h8b.onrender.com/api/sos", {
     method: "POST",
     headers: {
