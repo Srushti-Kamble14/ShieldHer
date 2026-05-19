@@ -1298,14 +1298,21 @@ useEffect(() => {
       callback: handleLoginCredentialResponse,
     });
 
-    window.google.accounts.id.renderButton(
-      document.getElementById("googleSignInDiv"),
-      {
-        theme: "outline",
-        size: "large",
-        width: "350",
-      }
-    );
+   window.google.accounts.id.renderButton(
+  document.getElementById("googleSignInDiv"),
+  {
+    theme: "outline",
+    size: "large",
+     width:
+  window.innerWidth < 380
+    ? 180
+    : window.innerWidth < 480
+    ? 220
+    : 320,
+    text: "continue_with",
+    width: "250",
+  }
+);
   };
 
   initializeGoogle();
@@ -1415,8 +1422,8 @@ useEffect(() => {
             />
           </div>
 
-          <div style={{ position: "relative", marginBottom: "20px" }}>
-            {/* CUSTOM BUTTON - VISIBLE, pointerEvents none */}
+          {/* <div style={{ position: "relative", marginBottom: "20px" }}>
+       
             <button
               onMouseEnter={() => setGHover(true)}
               onMouseLeave={() => setGHover(false)}
@@ -1487,7 +1494,37 @@ useEffect(() => {
                 background: "rgba(0,150,220,0.2)",
               }}
             />
-          </div>
+          </div> */}
+         <div style={{ position: "relative", marginBottom: "20px" }}>
+  <div
+    onMouseEnter={() => setGHover(true)}
+    onMouseLeave={() => setGHover(false)}
+    style={{
+      width: "100%",
+      padding: "12px",
+      background: gHover
+        ? "rgba(255,255,255,0.1)"
+        : "rgba(255,255,255,0.05)",
+      border: "1px solid rgba(255,255,255,0.15)",
+      borderRadius: "6px",
+      transition: "all .2s",
+      boxShadow: gHover
+        ? "0 0 20px rgba(255,255,255,0.06)"
+        : "none",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      backdropFilter: "blur(6px)",
+    }}
+  >
+    <div
+      id="googleSignInDiv"
+      style={{
+        transform: "scale(1.02)",
+      }}
+    />
+  </div>
+</div>
 
           <div
             style={{
