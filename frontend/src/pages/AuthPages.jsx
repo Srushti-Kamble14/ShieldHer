@@ -1253,28 +1253,8 @@ function LoginPage({ onSwitch }) {
     }
   };
 
-  //Login with google
- useEffect(() => {
-  if (!window.google) return;
-
-  google.accounts.id.initialize({
-    client_id:
-      "381053692152-pu57dbhfvjkei14plpdhun9b9vt8f6c4.apps.googleusercontent.com",
-    callback: handleLoginCredentialResponse,
-  });
-
-  google.accounts.id.renderButton(
-    document.getElementById("googleSignInDiv"),
-    {
-      theme: "outline",
-      size: "large",
-      width: "350",
-    }
-  );
-}, []);
-
   const handleLoginCredentialResponse = async (response) => {
-    console.log(response);
+      console.log("GOOGLE RESPONSE:", response);
     try {
   const res = await fetch(
     "https://shieldher-backend-1h8b.onrender.com/api/auth/google",
@@ -1303,6 +1283,35 @@ function LoginPage({ onSwitch }) {
   console.error(err);
 }
   };
+
+  //Login with google
+useEffect(() => {
+  const initializeGoogle = () => {
+    if (!window.google) {
+      console.log("Google SDK not loaded");
+      return;
+    }
+
+    window.google.accounts.id.initialize({
+      client_id:
+        "381053692152-pu57dbhfvjkei14plpdhun9b9vt8f6c4.apps.googleusercontent.com",
+      callback: handleLoginCredentialResponse,
+    });
+
+    window.google.accounts.id.renderButton(
+      document.getElementById("googleSignInDiv"),
+      {
+        theme: "outline",
+        size: "large",
+        width: "350",
+      }
+    );
+  };
+
+  initializeGoogle();
+}, []);
+
+  
 
   return (
     <div
@@ -1438,23 +1447,13 @@ function LoginPage({ onSwitch }) {
               <GoogleIcon /> CONTINUE WITH GOOGLE
             </button>
 
-            {/* GOOGLE DIV - INVISIBLE OVERLAY, upar */}
-            <div
-              id="googleSignInDiv" // ab div pe hai, button pe nahi
-              onMouseEnter={() => setGHover(true)}
-              onMouseLeave={() => setGHover(false)}
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                width: "100%",
-                height: "100%",
-                opacity: 0, // invisible
-                zIndex: 2, // custom button ke upar
-                overflow: "hidden",
-                cursor: "pointer",
-              }}
-            />
+             <div
+    id="googleSignInDiv"
+    style={{
+      display: "flex",
+      justifyContent: "center",
+    }}
+  />
           </div>
           <div
             style={{
