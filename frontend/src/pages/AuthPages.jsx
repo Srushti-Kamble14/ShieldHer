@@ -1254,37 +1254,53 @@ function LoginPage({ onSwitch }) {
   };
 
   //Login with google
-  useEffect(() => {
-    if (window.googleInitialized) return;
-    window.googleInitialized = true;
+ useEffect(() => {
+  if (!window.google) return;
 
-    google.accounts.id.initialize({
-      client_id:
-        "381053692152-pu57dbhfvjkei14plpdhun9b9vt8f6c4.apps.googleusercontent.com",
-      callback: handleLoginCredentialResponse,
-    });
+  google.accounts.id.initialize({
+    client_id:
+      "381053692152-pu57dbhfvjkei14plpdhun9b9vt8f6c4.apps.googleusercontent.com",
+    callback: handleLoginCredentialResponse,
+  });
 
-    google.accounts.id.renderButton(
-      document.getElementById("googleSignInDiv"),
-      { theme: "outline", size: "large", width: 400 },
-    );
-  }, []);
+  google.accounts.id.renderButton(
+    document.getElementById("googleSignInDiv"),
+    {
+      theme: "outline",
+      size: "large",
+      width: "350",
+    }
+  );
+}, []);
 
   const handleLoginCredentialResponse = async (response) => {
-    console.log("Google token:", response.credential);
-    const res = await fetch("https://shieldher-backend-1h8b.onrender.com/api/auth/google", {
+    try {
+  const res = await fetch(
+    "https://shieldher-backend-1h8b.onrender.com/api/auth/google",
+    {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token: response.credential }),
-    });
-
-    const data = await res.json();
-    console.log("Backend response:", data);
-
-    if (data.token) {
-      localStorage.setItem("token", data.token);
-      navigate("/home");
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        token: response.credential,
+      }),
     }
+  );
+
+  const data = await res.json();
+
+  console.log(data);
+
+  if (data.token) {
+    localStorage.setItem("token", data.token);
+    navigate("/home");
+  } else {
+    alert("Google login failed");
+  }
+} catch (err) {
+  console.error(err);
+}
   };
 
   return (
