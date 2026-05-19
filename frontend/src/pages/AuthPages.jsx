@@ -1274,6 +1274,7 @@ function LoginPage({ onSwitch }) {
 }, []);
 
   const handleLoginCredentialResponse = async (response) => {
+    console.log(response);
     try {
   const res = await fetch(
     "https://shieldher-backend-1h8b.onrender.com/api/auth/google",
