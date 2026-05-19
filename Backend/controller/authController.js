@@ -62,7 +62,7 @@ export const googleLogin = async (req, res) => {
   try {
     const ticket = await client.verifyIdToken({
       idToken: token,
-      audience: "786722486772-j3aobfouj1fmu23cjd9i122s4di870pp.apps.googleusercontent.com", // yahan do
+      audience: "381053692152-pu57dbhfvjkei14plpdhun9b9vt8f6c4.apps.googleusercontent.com", // yahan do
     });
 
     const payload = ticket.getPayload();
