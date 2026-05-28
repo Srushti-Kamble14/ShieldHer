@@ -2030,7 +2030,7 @@ export default function AuthPages() {
           position: "relative",
           zIndex: 10,
           width: "100%",
-          maxWidth: "420px",
+          maxWidth: "460px",
         }}
       >
         {page === "login" ? (
